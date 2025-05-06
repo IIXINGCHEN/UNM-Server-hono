@@ -1,0 +1,50 @@
+// vercel.json (Updated for Hono TypeScript Project)
+{
+  // Vercel 平台配置版本
+  "version": 2,
+  // 构建配置
+  "builds": [
+    {
+      // 源文件入口: 指向编译后的 Hono 应用实例导出文件 (src/app.ts -> dist/app.js)
+      "src": "./dist/app.js",
+      // 使用 Vercel 的 Node.js 构建器
+      "use": "@vercel/node",
+      // (可选) 配置构建器选项, 例如指定 Node.js 版本或包含文件
+      "config": {
+        // "includeFiles": ["src/views/**", "src/public/**"] // 如果需要确保这些文件包含在部署中
+        // "nodejs": "18.x" // 指定 Node.js 版本 (如果需要)
+      }
+    }
+  ],
+  // 路由配置
+  "routes": [
+    {
+      // 匹配所有入站请求路径
+      "src": "/(.*)",
+      // 将所有请求转发给 builds 中定义的唯一 Serverless Function (即我们的 Hono 应用)
+      "dest": "/dist/app.js", // 目标应与 builds[0].src 匹配或由 Vercel 自动处理
+      // --- CORS 头部移除 ---
+      // 以下 Access-Control-* 头部已从此配置中移除。
+      // CORS 策略将由应用内部的 hono/cors 中间件根据 config.ALLOWED_DOMAINS 进行管理。
+      // 这提供了更灵活、更安全的控制。
+      // "headers": {
+      //   "Access-Control-Allow-Credentials": "true",
+      //   "Access-Control-Allow-Origin": "*", // 已移除，由应用控制
+      //   "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+      //   "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+      // }
+      // (可选) 添加其他非 CORS 的通用头部, 例如安全相关的
+      "headers": {
+         // 示例: 添加一些通用的安全增强头部 (虽然 hono/secure-headers 也会做)
+         // "X-Content-Type-Options": "nosniff",
+         // "X-Frame-Options": "DENY"
+         // Vercel 会自动添加一些头部, 如 HSTS (如果配置了域名)
+      }
+    }
+  ]
+  // (可选) 可以添加其他 Vercel 配置, 如环境变量 GUI 映射等
+  // "env": {
+  //   "NODE_ENV": "production", // 可以在这里设置生产环境变量，但推荐使用 Vercel UI
+  //   "ALLOWED_DOMAINS": "@allowed_domains" // 映射到 Vercel UI 中设置的 Secret 或 Env Var
+  // }
+}
