@@ -29,6 +29,10 @@ interface EnvironmentVariables {
   YOUTUBE_KEY?: string; // 可选的 YouTube API Key
   LOG_LEVEL: 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'silent'; // 日志级别
   API_GDSTUDIO_URL: string; // 外部 API 的基础 URL
+  RATE_LIMIT_WINDOW_MS: number; // 速率限制时间窗口 (毫秒)
+  RATE_LIMIT_MAX_REQUESTS: number; // 时间窗口内最大请求数
+  RATE_LIMIT_STORE: 'memory' | 'redis'; // 存储类型 (可扩展)
+  RATE_LIMIT_REDIS_URL?: string; // Redis URL (如果使用 Redis)
 }
 
 // 使用 Joi 定义环境变量的校验 Schema
@@ -62,6 +66,18 @@ const envVarsSchema = Joi.object<EnvironmentVariables>({
   LOG_LEVEL: Joi.string().valid('fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent').default('info'),
   // API_GDSTUDIO_URL: 必须是有效的 URI 字符串, 默认为指定地址
   API_GDSTUDIO_URL: Joi.string().uri().default('https://music-api.gdstudio.xyz/api.php'),
+  // RATE_LIMIT_WINDOW_MS: 必须是整数数字, 最小 1000ms, 默认 15 分钟
+  RATE_LIMIT_WINDOW_MS: Joi.number().integer().min(1000).default(15 * 60 * 1000),
+  // RATE_LIMIT_MAX_REQUESTS: 必须是整数数字, 最小 1, 默认 100
+  RATE_LIMIT_MAX_REQUESTS: Joi.number().integer().min(1).default(100),
+  // RATE_LIMIT_STORE: 必须是 'memory' 或 'redis', 默认为 'memory'
+  RATE_LIMIT_STORE: Joi.string().valid('memory', 'redis').default('memory'),
+  // RATE_LIMIT_REDIS_URL: 可选字符串, 必须是 redis:// URI, 且当 RATE_LIMIT_STORE 为 'redis' 时必填
+  RATE_LIMIT_REDIS_URL: Joi.string().uri({ scheme: ['redis'] }).when('RATE_LIMIT_STORE', {
+      is: 'redis', // 条件: 当 RATE_LIMIT_STORE 是 'redis' 时
+      then: Joi.required(), // 那么 RATE_LIMIT_REDIS_URL 是必需的
+      otherwise: Joi.optional(), // 否则 (是 'memory') 它是可选的
+  }),
 })
 // .unknown(true) 允许存在 Schema 中未定义的其他环境变量 (例如系统变量)
 .unknown(true);
@@ -72,6 +88,7 @@ const { error, value: validatedEnvVars } = envVarsSchema.prefs({ errors: { label
 
 // 如果校验出错 (例如缺少必要变量或类型错误), 抛出错误, 阻止应用启动
 if (error) {
+  // 使用 throw 可以确保在配置无效时程序不会继续运行
   throw new Error(`❌ Config validation error: ${error.message}`);
 }
 
@@ -79,7 +96,7 @@ if (error) {
 // 先检查是否存在, 然后用 ',' 分割, trim() 去除两端空格, filter() 移除空字符串
 const parsedAllowedDomains = validatedEnvVars.ALLOWED_DOMAINS
   ? validatedEnvVars.ALLOWED_DOMAINS.split(',').map(domain => domain.trim()).filter(domain => domain.length > 0)
-  : ['*']; // 如果解析失败或原始字符串为空, 默认允许所有 ('*')
+  : ['*']; // 如果解析失败或原始字符串为空, 默认允许所有 ('*') - 但 Joi 的 required() 会先阻止空字符串
 
 // 创建最终的配置对象, 类型为 EnvironmentVariables
 const config: EnvironmentVariables = {
