@@ -1,0 +1,43 @@
+// tsconfig.json
+{
+  // 编译器选项：配置 TypeScript 如何编译代码
+  "compilerOptions": {
+    // ----- 基本选项 -----
+    "target": "ES2022", // 编译目标 JavaScript 版本 (ES2022 支持现代特性，如 top-level await)
+    "module": "NodeNext", // 模块系统：使用 Node.js 当前推荐的 ES Module 支持模式
+    "lib": ["ES2022", "DOM"], // 编译时包含的库定义，DOM 用于 fetch API 等 Web 标准类型
+    "esModuleInterop": true, // 允许通过 import 导入 CommonJS 模块（为了兼容性）
+    "forceConsistentCasingInFileNames": true, // 强制文件名大小写一致，避免跨平台问题
+    "resolveJsonModule": true, // 允许直接 import .json 文件 (例如 package.json)
+
+    // ----- 模块解析 -----
+    "moduleResolution": "NodeNext", // 模块解析策略：配合 "module": "NodeNext" 使用
+    "baseUrl": "./", // 模块解析的基础目录 (设置为项目根目录)
+    "paths": { // 路径映射 (可选，用于简化导入路径)
+      "@/*": ["src/*"] // 例如，允许 import '@/config' 代替 import '../src/config'
+    },
+
+    // ----- 输出选项 -----
+    "outDir": "./dist", // 编译后 JavaScript 文件的输出目录
+    "rootDir": "./src", // TypeScript 源文件的根目录
+
+    // ----- 严格类型检查 -----
+    "strict": true, // 启用所有严格类型检查选项 (推荐，提高代码质量)
+    // "noImplicitAny": true, // (包含在 strict 中) 禁止隐式的 any 类型
+    // "strictNullChecks": true, // (包含在 strict 中) 更严格的 null/undefined 检查
+    // "strictFunctionTypes": true, // (包含在 strict 中) 更严格的函数类型检查
+    // "strictPropertyInitialization": true, // (包含在 strict 中) 强制类属性在构造函数中初始化
+    // "noImplicitThis": true, // (包含在 strict 中) 禁止不明确的 this 类型
+    // "alwaysStrict": true, // (包含在 strict 中) 在生成的 JS 文件中始终使用严格模式
+
+    // ----- 其他选项 -----
+    "skipLibCheck": true, // 跳过对所有声明文件 (*.d.ts) 的类型检查 (加快编译速度)
+    "experimentalDecorators": true, // 启用实验性的装饰器语法 (如果未来使用 TypeORM 或 class-validator 等可能需要)
+    "emitDecoratorMetadata": true, // 为装饰器启用元数据反射 (配合 experimentalDecorators 使用)
+    "allowSyntheticDefaultImports": true // (通常与 esModuleInterop 一起使用) 允许从没有默认导出的模块中默认导入
+  },
+  // 指定需要编译的文件范围
+  "include": ["src/**/*"], // 包含 src 目录下的所有 .ts, .tsx, .d.ts 文件
+  // 指定不需要编译的文件或目录
+  "exclude": ["node_modules", "dist", "**/*.test.ts"] // 排除 node_modules, 输出目录, 和测试文件
+}
