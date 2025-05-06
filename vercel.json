@@ -1,3 +1,4 @@
+
 {
   "version": 2,
   "builds": [
@@ -5,15 +6,20 @@
       "src": "./dist/app.js",
       "use": "@vercel/node",
       "config": {
+        // "includeFiles": ["dist/views/**", "dist/public/**"] // 如果需要，取消注释以包含文件
+        // "nodejs": "18.x"
       }
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/dist/app.js",
-      "headers": {
-      }
+      "dest": "/dist/app.js"
+    
     }
   ]
+  // "env": {
+  //   "NODE_ENV": "production",
+  //   "ALLOWED_DOMAINS": "@allowed_domains"
+  // }
 }
