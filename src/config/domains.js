@@ -12,6 +12,7 @@ export const allowedDomains = [
   '*.axincghen.com',
   '*.ixincghen.top',
   '*.imixc.top',
+  'unm-server-hono.vercel.app',
   
   // 本地开发域名
   'localhost',

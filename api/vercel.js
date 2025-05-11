@@ -20,7 +20,16 @@ export default async function handler(req, res) {
   // 将请求传递给Hono应用
   try {
     // 获取完整URL
-    const url = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
+    let url;
+    try {
+      // 尝试解析完整URL
+      url = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
+    } catch (err) {
+      // 如果解析失败，构造一个基本URL
+      console.error('Failed to parse URL:', err);
+      url = new URL(`https://${req.headers.host || 'localhost'}`);
+      url.pathname = req.url || '/';
+    }
     const pathname = url.pathname;
 
     // 处理静态HTML文件
