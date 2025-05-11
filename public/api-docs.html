@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API 文档 - Meting API 音乐服务</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            'spin-fast': 'spin 0.5s linear infinite',
+          },
+          colors: {
+            'brand-primary-light': '#3b82f6', // blue-500
+            'brand-primary-dark': '#60a5fa',  // blue-400
+            'brand-secondary-light': '#8b5cf6', // violet-500
+            'brand-secondary-dark': '#a78bfa', // violet-400
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta name="color-scheme" content="light dark">
+
+  <!-- Syntax Highlighting (using highlight.js) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js" defer></script>
+  <!-- API文档交互脚本 -->
+  <script src="/js/api-docs.js" defer></script>
+  <!-- Fallback for highlight.js in case CDN fails -->
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      // Check if highlight.js loaded correctly
+      if (typeof hljs === 'undefined') {
+        console.warn('highlight.js failed to load from CDN, using fallback');
+        // Create a script element for highlight.js
+        var script = document.createElement('script');
+        script.src = '/js/highlight.min.js'; // Local fallback
+        script.onload = function () {
+          if (typeof hljs !== 'undefined') {
+            hljs.highlightAll();
+          }
+        };
+        document.head.appendChild(script);
+      }
+    });
+  </script>
+
+  <style type="text/tailwindcss">
+    html.dark {
+      color-scheme: dark;
+    }
+    html.light {
+      color-scheme: light;
+    }
+    html.light body { color: #1f2937; } /* gray-800 */
+    html.dark body { color: #e5e7eb; } /* gray-200 */
+    html.light .text-muted { color: #4b5563; } /* gray-600 */
+    html.dark .text-muted { color: #9ca3af; } /* gray-400 */
+    html.light .text-emphasis { color: #111827; } /* gray-900 */
+    html.dark .text-emphasis { color: #f9fafb; } /* gray-50 */
+
+    .gradient-text {
+      background-image: linear-gradient(90deg, theme('colors.brand-primary-light'), theme('colors.brand-secondary-light'));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+    html.dark .gradient-text {
+      background-image: linear-gradient(90deg, theme('colors.brand-primary-dark'), theme('colors.brand-secondary-dark')) !important;
+      text-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+    body {
+      font-family: 'Noto Sans SC', 'Inter', sans-serif; /* Added Inter as a fallback, Noto Sans SC primary */
+      min-height: 100vh;
+    }
+    pre code.hljs { /* For highlight.js compatibility with body font */
+        font-family: 'Fira Code', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    }
+
+    body::-webkit-scrollbar { width: 8px; height: 8px; }
+    body::-webkit-scrollbar-track { background: transparent; }
+    html.light body::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+    html.dark body::-webkit-scrollbar-thumb { background-color: #4b5563; border-radius: 20px; }
+    html.light body::-webkit-scrollbar-thumb:hover { background-color: #9ca3af; }
+    html.dark body::-webkit-scrollbar-thumb:hover { background-color: #6b7280; }
+    body { scrollbar-width: thin; }
+    html.light body { scrollbar-color: #cbd5e1 transparent; }
+    html.dark body { scrollbar-color: #4b5563 transparent; }
+
+    .card {
+      transition: all 0.3s ease-in-out;
+      border-radius: 0.75rem; /* rounded-xl */
+      overflow: hidden;
+      position: relative;
+      border: 1px solid;
+    }
+    html.light .card {
+      border-color: #e5e7eb; /* gray-200 */
+      background-color: #ffffff; /* white */
+      box-shadow: 0 4px 12px -2px rgba(0,0,0,0.06), 0 2px 8px -3px rgba(0,0,0,0.04);
+    }
+    html.dark .card {
+      border-color: #374151; /* gray-700 */
+      background-color: #1f2937; /* gray-800 */
+      box-shadow: 0 4px 12px -2px rgba(0,0,0,0.3), 0 2px 8px -3px rgba(0,0,0,0.25);
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background-image: linear-gradient(to right, theme('colors.brand-primary-light'), theme('colors.brand-secondary-light'));
+      opacity: 0; transition: opacity 0.3s ease-in-out, height 0.3s ease-in-out; z-index: 1;
+    }
+    html.dark .card::before {
+      background-image: linear-gradient(to right, theme('colors.brand-primary-dark'), theme('colors.brand-secondary-dark'));
+    }
+    .card:hover::before { opacity: 1; height: 4px; }
+    .card:hover { transform: translateY(-5px); }
+    html.light .card:hover { box-shadow: 0 10px 20px -5px rgba(0,0,0,0.08), 0 4px 12px -6px rgba(0,0,0,0.08); }
+    html.dark .card:hover { box-shadow: 0 10px 20px -5px rgba(0,0,0,0.4), 0 4px 12px -6px rgba(0,0,0,0.35); }
+
+    .nav-link {
+      position: relative; padding-bottom: 6px; padding-left: 0.5rem; padding-right: 0.5rem;
+      border-radius: 0.375rem; transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    }
+    html.light .nav-link { color: #374151; } /* gray-700 */
+    html.dark .nav-link { color: #d1d5db; } /* gray-300 */
+    .nav-link:hover { background-color: rgba(0,0,0,0.03); }
+    html.dark .nav-link:hover { background-color: rgba(255,255,255,0.05); }
+    html.light .nav-link:hover, html.light .nav-link.active { color: theme('colors.brand-primary-light'); }
+    html.dark .nav-link:hover, html.dark .nav-link.active { color: theme('colors.brand-primary-dark'); }
+    .nav-link::after {
+      content: ''; position: absolute; width: 0; height: 3px; bottom: 0; left: 50%;
+      transform: translateX(-50%); background-color: theme('colors.brand-primary-light');
+      transition: width 0.3s ease-in-out; border-radius: 2px;
+    }
+    html.dark .nav-link::after { background-color: theme('colors.brand-primary-dark'); }
+    .nav-link:hover::after, .nav-link.active::after { width: 60%; }
+    .nav-link.active { font-weight: 600; }
+
+    /* Styles for API Docs page specifically, adapted from index.html styles */
+    .api-docs-container { /* Replaces .api-container */
+        padding-top: 4rem; /* Adjusted for sticky header */
+        padding-bottom: 4rem;
+    }
+    .api-docs-card { /* Replaces .api-card, uses .card styles */
+        margin-bottom: 2rem;
+        padding: 1.5rem; /* p-6 */
+    }
+    @media (min-width: 640px) { /* sm breakpoint */
+        .api-docs-card { padding: 2rem; } /* sm:p-8 */
+    }
+    .api-docs-card-header { /* Replaces .api-header in your new HTML */
+        display: flex;
+        align-items: center;
+        gap: 0.75rem; /* space-x-3 */
+        margin-bottom: 1rem; /* mb-4 */
+        padding-bottom: 0.75rem; /* pb-3 */
+        border-bottom: 1px solid;
+    }
+    html.light .api-docs-card-header { border-color: #e5e7eb; } /* gray-200 */
+    html.dark .api-docs-card-header { border-color: #374151; } /* gray-700 */
+
+    .http-method-badge { /* Replaces .api-badge GET/POST etc. */
+      padding: 0.25rem 0.75rem 0.25rem 0.75rem; /* Adjusted padding slightly for no dot */
+      border-radius: 0.375rem; /* rounded-md */
+      font-weight: 600;
+      font-size: 0.8rem; /* Slightly larger than index.html's .http-method for emphasis */
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      text-transform: uppercase;
+      line-height: 1.1;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      letter-spacing: 0.025em;
+    }
+    .http-method-badge.get { background-image: linear-gradient(to right, #34d399, #059669); } /* Emerald */
+    .http-method-badge.post { background-image: linear-gradient(to right, #60a5fa, #2563eb); } /* Blue */
+    /* Add more for PUT, DELETE etc. if needed */
+
+    .api-docs-title { /* Replaces .api-title */
+        font-size: 1.25rem; /* text-xl */
+        font-weight: 600; /* font-semibold */
+    }
+    html.light .api-docs-title { color: #111827; } /* gray-900 */
+    html.dark .api-docs-title { color: #f3f4f6; } /* gray-100 */
+
+    .api-auth-tag { /* Replaces .api-tag */
+      font-size: 0.7rem; /* text-xs */
+      padding: 0.15rem 0.5rem; /* px-2 py-0.5 */
+      border-radius: 9999px; /* rounded-full */
+      font-weight: 500; /* font-medium */
+      margin-left: auto; /* Push to the right */
+    }
+    .api-auth-tag.needs-auth {
+      background-color: #fee2e2; color: #991b1b; /* red */
+    }
+    html.dark .api-auth-tag.needs-auth {
+      background-color: #7f1d1d; color: #fca5a5;
+    }
+    .api-auth-tag.no-auth {
+      background-color: #dcfce7; color: #166534; /* green */
+    }
+    html.dark .api-auth-tag.no-auth {
+      background-color: #14532d; color: #86efac;
+    }
+
+    .api-docs-description { /* Replaces .api-description */
+        margin-bottom: 1.5rem; /* mb-6 */
+    }
+
+    .api-docs-section { /* Replaces .api-section */
+        margin-bottom: 1.5rem; /* mb-6 */
+    }
+    .api-docs-section h4 {
+        font-size: 1rem; /* text-base */
+        font-weight: 600; /* font-semibold */
+        margin-bottom: 0.75rem; /* mb-3 */
+        display: flex;
+        align-items: center;
+    }
+    .api-docs-section h4 i {
+        margin-right: 0.5rem; /* mr-2 */
+        color: theme('colors.brand-primary-light');
+    }
+    html.dark .api-docs-section h4 i {
+        color: theme('colors.brand-primary-dark');
+    }
+
+    .api-url-codeblock { /* Replaces .api-url-container */
+      padding: 0.75rem 1rem; /* p-3 sm:p-4 */
+      border-radius: 0.5rem; /* rounded-lg */
+      margin-bottom: 1rem; /* mb-4 for consistency with .code-path */
+      border: 1px solid;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Fira Code', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+      font-size: 0.875rem; /* text-sm */
+    }
+    html.light .api-url-codeblock {
+      background-color: #f3f4f6; /* gray-100 */
+      border-color: #e5e7eb; /* gray-200 */
+      color: #1f2937; /* gray-800 */
+    }
+    html.dark .api-url-codeblock {
+      background-color: #111827; /* gray-900 */
+      border-color: #374151; /* gray-700 */
+      color: #d1d5db; /* gray-300 */
+    }
+
+    .api-params-table { /* Replaces .api-params */
+        border: 1px solid;
+        border-radius: 0.5rem; /* rounded-lg */
+        overflow: hidden; /* For rounded corners on table */
+    }
+    html.light .api-params-table { border-color: #e5e7eb; /* gray-200 */ }
+    html.dark .api-params-table { border-color: #374151; /* gray-700 */ }
+
+    .api-param-row { /* Replaces .param-row */
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr)); /* Adjusted for 4 columns */
+        gap: 1rem; /* gap-4 */
+        padding: 0.75rem 1rem; /* px-4 py-3 */
+        font-size: 0.875rem; /* text-sm */
+        align-items: center;
+    }
+    .api-param-row:not(:last-child) {
+        border-bottom: 1px solid;
+    }
+    html.light .api-param-row { background-color: #ffffff; } /* white */
+    html.dark .api-param-row { background-color: #1f2937; } /* gray-800 */
+    html.light .api-param-row:not(:last-child) { border-color: #e5e7eb; } /* gray-200 */
+    html.dark .api-param-row:not(:last-child) { border-color: #374151; /* gray-700 */ }
+
+    .api-param-name code { /* Replaces .param-name */
+      font-weight: 500; /* font-medium */
+      font-family: 'Fira Code', monospace;
+    }
+    html.light .api-param-name code { color: #1f2937; } /* gray-800 */
+    html.dark .api-param-name code { color: #e5e7eb; } /* gray-200 */
+
+    .api-param-type { /* Replaces .param-type */
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8em;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    html.light .api-param-type { background-color: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; } /* indigo */
+    html.dark .api-param-type { background-color: #3730a3; color: #a5b4fc; border: 1px solid #4f46e5; }
+
+    .api-param-status { /* Replaces .param-required / .param-optional */
+      font-size: 0.7rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .api-param-status.required { background-color: #fee2e2; color: #991b1b; } /* red */
+    html.dark .api-param-status.required { background-color: #7f1d1d; color: #fca5a5; }
+    .api-param-status.optional { background-color: #f0f9ff; color: #0369a1; } /* sky */
+    html.dark .api-param-status.optional { background-color: #0c4a6e; color: #7dd3fc; }
+
+    .api-response-block { /* Replaces .api-response */
+      position: relative; /* For copy button */
+    }
+    .api-response-block pre {
+      padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem; /* text-sm */
+      line-height: 1.75;
+      overflow-x: auto;
+      /* highlight.js styles will take care of background and text color */
+    }
+    .api-response-block .copy-btn { /* Ensure copy button is styled */
+        position: absolute;
+        top: 0.75rem; /* Pushed slightly from edge */
+        right: 0.75rem;
+        padding: 0.3rem 0.5rem;
+        border-radius: 0.375rem; /* rounded-md */
+        font-size: 0.8rem;
+        transition: background-color 0.2s;
+    }
+    html.light .api-response-block .copy-btn {
+        background-color: #4b5563; /* gray-600 */
+        color: #f3f4f6; /* gray-100 */
+    }
+    html.dark .api-response-block .copy-btn {
+        background-color: #374151; /* gray-700 */
+        color: #9ca3af; /* gray-400 */
+    }
+    html.light .api-response-block .copy-btn:hover { background-color: #6b7280; } /* gray-500 */
+    html.dark .api-response-block .copy-btn:hover { background-color: #4b5563; } /* gray-600 */
+
+
+    .api-actions-bar { /* Replaces .api-actions */
+        margin-top: 1.5rem; /* mt-6 */
+        padding-top: 1.5rem; /* pt-6 */
+        border-top: 1px solid;
+        display: flex;
+        gap: 0.75rem; /* space-x-3 */
+    }
+    html.light .api-actions-bar { border-color: #e5e7eb; } /* gray-200 */
+    html.dark .api-actions-bar { border-color: #374151; } /* gray-700 */
+
+    .api-action-btn { /* General style for buttons in actions bar */
+      padding: 0.6rem 1.2rem; /* py-2 px-4 or similar */
+      border-radius: 0.375rem; /* rounded-md */
+      font-weight: 500; /* font-medium */
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem; /* space-x-2 */
+      transition: all 0.2s;
+    }
+    .api-action-btn i {
+      font-size: 0.9em;
+    }
+    .api-action-btn.primary {
+      background-color: theme('colors.brand-primary-light');
+      color: white;
+      border: 1px solid transparent;
+    }
+    html.dark .api-action-btn.primary {
+      background-color: theme('colors.brand-primary-dark');
+    }
+    .api-action-btn.primary:hover {
+      background-color: theme('colors.blue.600');
+    }
+    html.dark .api-action-btn.primary:hover {
+      background-color: theme('colors.blue.500');
+    }
+    .api-action-btn.secondary {
+      border: 1px solid;
+    }
+    html.light .api-action-btn.secondary {
+      color: theme('colors.brand-primary-light');
+      border-color: theme('colors.brand-primary-light');
+    }
+    html.dark .api-action-btn.secondary {
+      color: theme('colors.brand-primary-dark');
+      border-color: theme('colors.brand-primary-dark');
+    }
+    html.light .api-action-btn.secondary:hover {
+      background-color: theme('colors.blue.50');
+    }
+    html.dark .api-action-btn.secondary:hover {
+      background-color: theme('colors.slate.700');
+    }
+
+    /* General Copy Button Style */
+    .general-copy-btn {
+      background-color: transparent;
+      border: none;
+      padding: 0.25rem;
+      margin-left: 0.5rem;
+      cursor: pointer;
+      color: #6b7280; /* gray-500 */
+      transition: color 0.2s;
+    }
+    html.dark .general-copy-btn {
+      color: #9ca3af; /* gray-400 */
+    }
+    .general-copy-btn:hover {
+      color: theme('colors.brand-primary-light');
+    }
+    html.dark .general-copy-btn:hover {
+      color: theme('colors.brand-primary-dark');
+    }
+    .general-copy-btn i { font-size: 0.9rem; }
+
+  </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-black">
+  <header
+    class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg shadow-md dark:shadow-slate-700/30 sticky top-0 z-50">
+    <div class="container mx-auto px-4 sm:px-6 py-3">
+      <div class="flex items-center justify-between">
+        <a href="index.html" class="flex items-center"> <!-- Link back to index.html -->
+          <i class="fas fa-music text-3xl text-brand-primary-light dark:text-brand-primary-dark mr-3"></i>
+          <h1 class="text-2xl font-bold gradient-text">Meting API</h1>
+        </a>
+        <nav id="main-nav" class="hidden md:flex md:items-center space-x-5 lg:space-x-6">
+          <a href="index.html#features" class="nav-link font-medium">功能特性</a>
+          <a href="api-docs.html" class="nav-link font-medium active">API文档</a> <!-- Current page active -->
+          <a href="index.html#examples" class="nav-link font-medium">示例代码</a>
+          <a href="index.html#authentication" class="nav-link font-medium">鉴权说明</a>
+        </nav>
+        <div class="flex items-center">
+          <button id="theme-toggle-button"
+            class="text-gray-600 hover:text-brand-primary-light focus:outline-none p-2 rounded-full dark:text-gray-400 dark:hover:text-brand-primary-dark mr-1 hover:bg-gray-100 dark:hover:bg-slate-700"
+            aria-label="Toggle dark mode">
+            <i class="fas fa-moon dark:hidden"></i>
+            <i class="fas fa-sun hidden dark:block"></i>
+          </button>
+          <button id="mobile-menu-button"
+            class="md:hidden text-gray-600 hover:text-brand-primary-light focus:outline-none p-1.5 rounded-md dark:text-gray-400 dark:hover:text-brand-primary-dark hover:bg-gray-100 dark:hover:bg-slate-700"
+            aria-label="Toggle menu">
+            <i id="menu-icon" class="fas fa-bars text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu-container"
+      class="hidden md:hidden bg-white dark:bg-slate-800 shadow-xl dark:shadow-slate-700/50 absolute top-full left-0 right-0 z-40 border-t border-gray-200 dark:border-slate-700">
+      <a href="index.html#features"
+        class="block py-3 px-5 text-gray-700 hover:bg-slate-100 dark:text-gray-300 dark:hover:bg-slate-700/70 dark:hover:text-brand-primary-dark">功能特性</a>
+      <a href="api-docs.html"
+        class="block py-3 px-5 text-gray-700 hover:bg-slate-100 dark:text-gray-300 dark:hover:bg-slate-700/70 dark:hover:text-brand-primary-dark">API文档</a>
+      <a href="index.html#examples"
+        class="block py-3 px-5 text-gray-700 hover:bg-slate-100 dark:text-gray-300 dark:hover:bg-slate-700/70 dark:hover:text-brand-primary-dark">示例代码</a>
+      <a href="index.html#authentication"
+        class="block py-3 px-5 text-gray-700 hover:bg-slate-100 dark:text-gray-300 dark:hover:bg-slate-700/70 dark:hover:text-brand-primary-dark">鉴权说明</a>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 sm:px-6 api-docs-container">
+    <h2 class="text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16 text-emphasis">
+      API<span class="gradient-text">接口文档</span>
+    </h2>
+
+    <!-- API卡片1: 获取特殊歌曲 -->
+    <div class="card api-docs-card">
+      <div class="api-docs-card-header">
+        <div class="http-method-badge get">GET</div>
+        <h3 class="api-docs-title">获取特殊歌曲 (返回歌曲)</h3>
+        <span class="api-auth-tag needs-auth">需要鉴权</span>
+      </div>
+
+      <div class="api-docs-description text-muted">
+        <p>获取网易云、QQ音乐等平台的歌曲资源，支持获取音频URL、封面图片和歌词。</p>
+      </div>
+
+      <div class="api-details">
+        <div class="api-docs-section">
+          <h4><i class="fas fa-link"></i> 请求URL</h4>
+          <div class="api-url-codeblock">
+            <code>GET /api/match</code>
+            <button class="general-copy-btn" title="复制URL" data-copy-target="/api/match"><i
+                class="fas fa-copy"></i></button>
+          </div>
+        </div>
+
+        <div class="api-docs-section">
+          <h4><i class="fas fa-list"></i> 参数</h4>
+          <div class="api-params-table">
+            <div class="api-param-row">
+              <div class="api-param-name"><code>type</code></div>
+              <div class="api-param-type">string</div>
+              <div class="api-param-status required">必填</div>
+              <div class="text-muted">资源类型: url(音频), pic(封面), lrc(歌词)</div>
+            </div>
+            <div class="api-param-row">
+              <div class="api-param-name"><code>id</code></div>
+              <div class="api-param-type">string</div>
+              <div class="api-param-status required">必填</div>
+              <div class="text-muted">歌曲ID</div>
+            </div>
+            <div class="api-param-row">
+              <div class="api-param-name"><code>br</code></div>
+              <div class="api-param-type">number</div>
+              <div class="api-param-status optional">可选</div>
+              <div class="text-muted">音质比特率，如: 128, 320, 999 (无损)</div>
+            </div>
+            <div class="api-param-row">
+              <div class="api-param-name"><code>auth</code></div>
+              <div class="api-param-type">string</div>
+              <div class="api-param-status required">必填</div>
+              <div class="text-muted">鉴权参数 (SIGNATURE|TIMESTAMP|NONCE)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="api-docs-section">
+          <h4><i class="fas fa-reply"></i> 返回示例</h4>
+          <div class="api-response-block">
+            <pre><code class="language-json" id="response-match">{
+  "success": true,
+  "data": {
+    "id": "1962165898",
+    "url": "https://music.example.com/song/1962165898.mp3",
+    "source": "netease",
+    "size": 10240000,
+    "br": 320000
+  }
+}</code></pre>
+            <button class="copy-btn" title="复制示例" data-copy-target-id="response-match"><i
+                class="fas fa-copy"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="api-actions-bar">
+        <button class="api-action-btn primary"><i class="fas fa-play"></i> 在线调试</button>
+        <button class="api-action-btn secondary"><i class="fas fa-book"></i> 详细文档</button>
+      </div>
+    </div>
+
+    <!-- API卡片2: 歌曲名称搜索 -->
+    <div class="card api-docs-card">
+      <div class="api-docs-card-header">
+        <div class="http-method-badge get">GET</div>
+        <h3 class="api-docs-title">歌曲名称搜索</h3>
+        <span class="api-auth-tag needs-auth">需要鉴权</span>
+      </div>
+
+      <div class="api-docs-description text-muted">
+        <p>根据歌曲名称搜索歌曲，返回匹配的歌曲列表。</p>
+      </div>
+
+      <div class="api-details">
+        <div class="api-docs-section">
+          <h4><i class="fas fa-link"></i> 请求URL</h4>
+          <div class="api-url-codeblock">
+            <code>GET /api/search</code>
+            <button class="general-copy-btn" title="复制URL" data-copy-target="/api/search"><i
+                class="fas fa-copy"></i></button>
+          </div>
+        </div>
+
+        <div class="api-docs-section">
+          <h4><i class="fas fa-list"></i> 参数</h4>
+          <div class="api-params-table">
+            <div class="api-param-row">
+              <div class="api-param-name"><code>name</code></div>
+              <div class="api-param-type">string</div>
+              <div class="api-param-status required">必填</div>
+              <div class="text-muted">歌曲名称</div>
+            </div>
+            <div class="api-param-row">
+              <div class="api-param-name"><code>source</code></div>
+              <div class="api-param-type">string</div>
+              <div class="api-param-status optional">可选</div>
+              <div class="text-muted">音乐源: netease, qq, kugou, kuwo</div>
+            </div>
+            <div class="api-param-row">
+              <div class="api-param-name"><code>auth</code></div>
+              <div class="api-param-type">string</div>
+              <div class="api-param-status required">必填</div>
+              <div class="text-muted">鉴权参数 (SIGNATURE|TIMESTAMP|NONCE)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="api-docs-section">
+          <h4><i class="fas fa-reply"></i> 返回示例</h4>
+          <div class="api-response-block">
+            <pre><code class="language-json" id="response-search">{
+  "success": true,
+  "data": [
+    {
+      "id": "1962165898",
+      "name": "起风了",
+      "artist": "买辣椒也用券",
+      "source": "netease",
+      "url_id": "1962165898"
+    }
+  ]
+}</code></pre>
+            <button class="copy-btn" title="复制示例" data-copy-target-id="response-search"><i
+                class="fas fa-copy"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="api-actions-bar">
+        <button class="api-action-btn primary"><i class="fas fa-play"></i> 在线调试</button>
+        <button class="api-action-btn secondary"><i class="fas fa-book"></i> 详细文档</button>
+      </div>
+    </div>
+
+    <!-- API卡片3: 获取服务器信息 -->
+    <div class="card api-docs-card">
+      <div class="api-docs-card-header">
+        <div class="http-method-badge get">GET</div>
+        <h3 class="api-docs-title">获取服务器信息</h3>
+        <span class="api-auth-tag no-auth">无需鉴权</span>
+      </div>
+
+      <div class="api-docs-description text-muted">
+        <p>获取服务器版本、状态等基本信息。</p>
+      </div>
+
+      <div class="api-details">
+        <div class="api-docs-section">
+          <h4><i class="fas fa-link"></i> 请求URL</h4>
+          <div class="api-url-codeblock">
+            <code>GET /api/info</code>
+            <button class="general-copy-btn" title="复制URL" data-copy-target="/api/info"><i
+                class="fas fa-copy"></i></button>
+          </div>
+        </div>
+
+        <div class="api-docs-section">
+          <h4><i class="fas fa-reply"></i> 返回示例</h4>
+          <div class="api-response-block">
+            <pre><code class="language-json" id="response-info">{
+  "success": true,
+  "data": {
+    "version": "1.0.9",
+    "enable_flac": true,
+    "api_version": "1.0.9",
+    "node_version": "v18.16.0"
+  }
+}</code></pre>
+            <button class="copy-btn" title="复制示例" data-copy-target-id="response-info"><i
+                class="fas fa-copy"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="api-actions-bar">
+        <button class="api-action-btn primary"><i class="fas fa-play"></i> 在线调试</button>
+        <button class="api-action-btn secondary"><i class="fas fa-book"></i> 详细文档</button>
+      </div>
+    </div>
+  </main>
+
+  <footer
+    class="footer bg-slate-800 dark:bg-black text-slate-400 dark:text-slate-400/80 py-10 sm:py-14 border-t border-slate-700 dark:border-slate-700/50">
+    <div class="container mx-auto px-4 sm:px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0 text-center md:text-left">
+          <div class="flex items-center justify-center md:justify-start">
+            <i class="fas fa-music text-2xl text-brand-primary-dark mr-3"></i>
+            <span class="text-xl font-bold text-white dark:text-slate-100">Meting API</span>
+          </div>
+          <p class="text-slate-400/80 dark:text-slate-500/80 mt-2 text-sm">强大而优雅的音乐服务接口</p>
+        </div>
+        <div class="flex space-x-5">
+          <a href="#" class="text-slate-400 hover:text-brand-primary-dark transition-colors duration-300"
+            aria-label="GitHub"> <i class="fab fa-github text-2xl"></i> </a>
+          <a href="#" class="text-slate-400 hover:text-brand-primary-dark transition-colors duration-300"
+            aria-label="Weixin"> <i class="fab fa-weixin text-2xl"></i> </a>
+          <a href="#" class="text-slate-400 hover:text-brand-primary-dark transition-colors duration-300"
+            aria-label="Email"> <i class="fas fa-envelope text-2xl"></i> </a>
+        </div>
+      </div>
+      <div
+        class="border-t border-slate-700/70 dark:border-slate-700/50 mt-8 pt-8 text-center text-slate-400/80 dark:text-slate-500/80 text-sm">
+        <p>此API基于 <a href="https://github.com/metowolf/Meting" target="_blank" rel="noopener noreferrer"
+            class="text-brand-primary-dark hover:underline">Meting</a> 构建</p>
+        <p class="mt-2">©
+          <script>document.write(new Date().getFullYear())</script> Meting API. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Utility function to ensure visibility in dark mode for gradient text
+    function ensureVisibilityInDarkMode() {
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      if (isDarkMode) {
+        document.querySelectorAll('.gradient-text').forEach(text => {
+          text.style.zIndex = '10'; // Or any value higher than overlapping elements
+          text.style.position = 'relative'; // Needed for z-index to take effect if not already positioned
+        });
+      }
+    }
+
+    // Theme Toggle
+    (function () {
+      const htmlElement = document.documentElement;
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
+      ensureVisibilityInDarkMode(); // Call on initial load
+    })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize highlight.js if available
+      if (typeof hljs !== 'undefined') {
+        hljs.highlightAll();
+      } else {
+        console.warn('highlight.js not available at DOMContentLoaded, will try again later');
+        // Try again after a short delay to give scripts time to load
+        setTimeout(() => {
+          if (typeof hljs !== 'undefined') {
+            hljs.highlightAll();
+          } else {
+            console.error('highlight.js still not available after delay');
+          }
+        }, 1000);
+      }
+
+      // Theme Toggle Button
+      const themeToggleButton = document.getElementById('theme-toggle-button');
+
+      function applyTheme(theme) {
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        }
+        setTimeout(ensureVisibilityInDarkMode, 50); // Re-check after theme change
+      }
+
+      if (themeToggleButton) {
+        themeToggleButton.addEventListener('click', () => {
+          const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+          applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+
+        // Set initial theme based on localStorage or system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+          applyTheme(savedTheme);
+        } else {
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          applyTheme(systemPrefersDark ? 'dark' : 'light');
+        }
+      }
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) { // Only if no explicit theme is set
+          applyTheme(e.matches ? 'dark' : 'light');
+        }
+      });
+
+      // Mobile menu toggle
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenuContainer = document.getElementById('mobile-menu-container');
+      const menuIcon = document.getElementById('menu-icon');
+      if (mobileMenuButton && mobileMenuContainer && menuIcon) {
+        mobileMenuButton.addEventListener('click', function () {
+          mobileMenuContainer.classList.toggle('hidden');
+          menuIcon.classList.toggle('fa-bars');
+          menuIcon.classList.toggle('fa-times');
+        });
+      }
+
+      // Copy to clipboard functionality
+      document.querySelectorAll('.general-copy-btn, .api-response-block .copy-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          let textToCopy = '';
+          const targetUrl = button.dataset.copyTarget;
+          const targetId = button.dataset.copyTargetId;
+
+          if (targetUrl) {
+            textToCopy = `${window.location.origin}${targetUrl}`; // Assuming API is on same origin
+          } else if (targetId) {
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+              textToCopy = targetElement.innerText;
+            }
+          }
+
+          if (textToCopy) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+              const originalText = button.innerHTML;
+              button.innerHTML = '<i class="fas fa-check"></i> 已复制';
+              setTimeout(() => {
+                button.innerHTML = originalText;
+              }, 2000);
+            }).catch(err => {
+              console.error('无法复制: ', err);
+              const originalText = button.innerHTML;
+              button.innerHTML = '<i class="fas fa-times"></i> 失败';
+              setTimeout(() => {
+                button.innerHTML = originalText;
+              }, 2000);
+            });
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

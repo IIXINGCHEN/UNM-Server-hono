@@ -1,0 +1,700 @@
+/* API文档现代化样式 */
+:root {
+  /* 主色调 */
+  --primary-color: #3b82f6;
+  --primary-light: #93c5fd;
+  --primary-dark: #1d4ed8;
+
+  /* 中性色 */
+  --neutral-50: #f9fafb;
+  --neutral-100: #f3f4f6;
+  --neutral-200: #e5e7eb;
+  --neutral-300: #d1d5db;
+  --neutral-600: #4b5563;
+  --neutral-700: #374151;
+  --neutral-800: #1f2937;
+  --neutral-900: #111827;
+
+  /* 语义色 */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  /* 方法颜色 */
+  --get: #22c55e;
+  --post: #3b82f6;
+  --put: #f59e0b;
+  --delete: #ef4444;
+
+  /* 间距 */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* 圆角 */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--neutral-800);
+  background-color: var(--neutral-100);
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
+
+.api-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: var(--space-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 600px), 1fr));
+  gap: var(--space-lg);
+}
+
+.api-card {
+  background-color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid var(--neutral-200);
+  position: relative;
+}
+
+.api-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-light);
+}
+
+.api-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.api-card:hover::before {
+  opacity: 1;
+}
+
+.api-header {
+  padding: var(--space-lg) var(--space-lg);
+  border-bottom: 1px solid var(--neutral-200);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  cursor: pointer;
+  background-color: var(--neutral-50);
+  transition: background-color 0.3s ease;
+}
+
+.api-card:hover .api-header {
+  background-color: white;
+}
+
+.api-badge {
+  background-color: var(--get);
+  color: white;
+  font-weight: 600;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  min-width: 3.5rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.03em;
+}
+
+.api-badge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: white;
+  border-radius: 50%;
+  margin-right: 4px;
+  opacity: 0.8;
+}
+
+.api-badge.get {
+  background-color: var(--get);
+  background-image: linear-gradient(135deg, var(--get), #18a047);
+}
+
+.api-badge.post {
+  background-color: var(--post);
+  background-image: linear-gradient(135deg, var(--post), #1a56c2);
+}
+
+.api-badge.put {
+  background-color: var(--put);
+  background-image: linear-gradient(135deg, var(--put), #d97706);
+}
+
+.api-badge.delete {
+  background-color: var(--delete);
+  background-image: linear-gradient(135deg, var(--delete), #b91c1c);
+}
+
+.api-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--neutral-900);
+  flex-grow: 1;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.api-card:hover .api-title {
+  color: var(--primary-color);
+}
+
+.api-tag {
+  background-color: var(--neutral-200);
+  color: var(--neutral-700);
+  font-size: 0.75rem;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.api-tag::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background-color: currentColor;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.api-tag.auth {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.api-description {
+  padding: var(--space-lg) var(--space-lg);
+  color: var(--neutral-600);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  border-bottom: 1px solid var(--neutral-200);
+  background-color: white;
+}
+
+.api-details {
+  padding: var(--space-lg) var(--space-lg);
+  background-color: white;
+}
+
+.api-section {
+  margin-bottom: var(--space-xl);
+  position: relative;
+}
+
+.api-section:last-child {
+  margin-bottom: 0;
+}
+
+.api-section h4 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--neutral-800);
+  margin-top: 0;
+  margin-bottom: var(--space-md);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-xs);
+  border-bottom: 2px solid var(--neutral-200);
+  position: relative;
+}
+
+.api-section h4::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background-color: var(--primary-color);
+}
+
+.api-section h4 i {
+  color: var(--primary-color);
+  font-size: 1.125rem;
+}
+
+.api-url-container {
+  display: flex;
+  align-items: center;
+  background-color: var(--neutral-100);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--neutral-200);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.api-url-container:hover {
+  border-color: var(--primary-light);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.api-url {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9375rem;
+  color: var(--neutral-800);
+  flex-grow: 1;
+  padding: var(--space-xs) 0;
+}
+
+.copy-btn {
+  background: none;
+  border: none;
+  color: var(--neutral-600);
+  cursor: pointer;
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--space-sm);
+}
+
+.copy-btn:hover {
+  color: var(--primary-color);
+  background-color: var(--neutral-200);
+}
+
+.copy-btn i {
+  font-size: 1rem;
+}
+
+.api-params {
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background-color: white;
+}
+
+.param-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr 2fr;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--neutral-200);
+  transition: background-color 0.2s ease;
+}
+
+.param-row:last-child {
+  border-bottom: none;
+}
+
+.param-row:nth-child(even) {
+  background-color: var(--neutral-50);
+}
+
+.param-row:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.param-name {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+}
+
+.param-name::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.param-type {
+  font-size: 0.8125rem;
+  color: var(--neutral-700);
+  background-color: var(--neutral-100);
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  font-family: 'Fira Code', monospace;
+  font-weight: 500;
+}
+
+.param-required {
+  font-size: 0.75rem;
+  color: white;
+  font-weight: 600;
+  background-color: var(--error);
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.03em;
+}
+
+.param-required::before {
+  content: '!';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  margin-right: 4px;
+  font-size: 10px;
+  line-height: 14px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.param-optional {
+  font-size: 0.75rem;
+  color: var(--neutral-700);
+  font-weight: 500;
+  background-color: var(--neutral-200);
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.param-desc {
+  font-size: 0.875rem;
+  color: var(--neutral-700);
+  line-height: 1.5;
+}
+
+.api-response {
+  background-color: var(--neutral-900);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  overflow-x: auto;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.api-response::before {
+  content: 'JSON';
+  position: absolute;
+  top: 8px;
+  right: 40px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Fira Code', monospace;
+  letter-spacing: 0.05em;
+}
+
+.api-response pre {
+  margin: 0;
+}
+
+.api-response code {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9375rem;
+  color: var(--neutral-200);
+  line-height: 1.6;
+}
+
+.api-actions {
+  padding: var(--space-lg);
+  display: flex;
+  gap: var(--space-md);
+  border-top: 1px solid var(--neutral-200);
+  background-color: var(--neutral-50);
+}
+
+.try-btn,
+.docs-btn {
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.try-btn {
+  background-image: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  color: white;
+  border: none;
+}
+
+.try-btn:hover {
+  background-image: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.try-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.docs-btn {
+  background-color: white;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.docs-btn:hover {
+  background-color: var(--primary-light);
+  color: white;
+  border-color: var(--primary-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.docs-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* 页眉样式 */
+.api-header-container {
+  background-color: white;
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--neutral-200);
+}
+
+.api-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.api-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--neutral-900);
+}
+
+.api-logo i {
+  color: var(--primary-color);
+}
+
+.api-nav {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.api-nav-item {
+  color: var(--neutral-700);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.api-nav-item:hover {
+  color: var(--primary-color);
+}
+
+.api-nav-item.active {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* 页脚样式 */
+.api-footer {
+  background-color: var(--neutral-800);
+  color: var(--neutral-300);
+  padding: var(--space-lg) 0;
+  margin-top: var(--space-xl);
+}
+
+.api-footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .param-row {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: var(--space-xs);
+  }
+
+  .param-desc {
+    grid-column: span 2;
+  }
+
+  .api-nav {
+    display: none;
+  }
+}
+
+/* 暗色模式 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --neutral-50: #18181b;
+    --neutral-100: #27272a;
+    --neutral-200: #3f3f46;
+    --neutral-300: #52525b;
+    --neutral-600: #a1a1aa;
+    --neutral-700: #d4d4d8;
+    --neutral-800: #e4e4e7;
+    --neutral-900: #f4f4f5;
+
+    /* 暗色模式下的主色调调整 */
+    --primary-light: #60a5fa;
+    --primary-color: #3b82f6;
+    --primary-dark: #2563eb;
+  }
+
+  body {
+    background-color: #121212;
+  }
+
+  .api-card {
+    background-color: var(--neutral-50);
+    border-color: var(--neutral-200);
+  }
+
+  .api-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+  }
+
+  .api-header {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .api-card:hover .api-header {
+    background-color: var(--neutral-50);
+  }
+
+  .api-description,
+  .api-details {
+    background-color: var(--neutral-50);
+  }
+
+  .api-header-container {
+    background-color: var(--neutral-50);
+    border-color: var(--neutral-200);
+  }
+
+  .api-url-container {
+    background-color: var(--neutral-100);
+    border-color: var(--neutral-200);
+  }
+
+  .api-params {
+    background-color: var(--neutral-50);
+    border-color: var(--neutral-200);
+  }
+
+  .param-row:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .param-row:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+  }
+
+  .param-type {
+    background-color: var(--neutral-200);
+    color: var(--neutral-50);
+  }
+
+  .param-optional {
+    background-color: var(--neutral-700);
+    color: var(--neutral-100);
+  }
+
+  .api-response {
+    background-color: #121212;
+    border-color: var(--neutral-200);
+  }
+
+  .api-actions {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-color: var(--neutral-200);
+  }
+
+  .docs-btn {
+    background-color: transparent;
+    border-color: var(--primary-color);
+  }
+
+  .docs-btn:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+
+  .api-footer {
+    background-color: #121212;
+    border-top: 1px solid var(--neutral-200);
+  }
+
+  /* 暗色模式下的滚动条样式 */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--neutral-100);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--neutral-600);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+  }
+}

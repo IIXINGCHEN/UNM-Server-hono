@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meting API - 强大的音乐服务接口</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            'spin-fast': 'spin 0.5s linear infinite',
+          },
+          colors: {
+            'brand-primary-light': '#3b82f6', // blue-500
+            'brand-primary-dark': '#60a5fa',  // blue-400
+            'brand-secondary-light': '#8b5cf6', // violet-500
+            'brand-secondary-dark': '#a78bfa', // violet-400
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta name="color-scheme" content="light dark">
+  <style type="text/tailwindcss">
+    html.dark {
+      color-scheme: dark;
+    }
+
+    html.light {
+      color-scheme: light;
+    }
+
+    /* Base Text Colors for Clarity */
+    html.light body {
+      color: #1f2937;
+    }
+
+    /* gray-800 */
+    html.dark body {
+      color: #e5e7eb;
+    }
+
+    /* gray-200 */
+
+    html.light .text-muted {
+      color: #4b5563;
+    }
+
+    /* gray-600 */
+    html.dark .text-muted {
+      color: #9ca3af;
+    }
+
+    /* gray-400 */
+
+    html.light .text-emphasis {
+      color: #111827;
+    }
+
+    /* gray-900 */
+    html.dark .text-emphasis {
+      color: #f9fafb;
+    }
+
+    /* gray-50 */
+
+    /* Gradient Text */
+    .gradient-text {
+      background-image: linear-gradient(90deg, theme('colors.brand-primary-light'), theme('colors.brand-secondary-light'));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+
+    html.dark .gradient-text {
+      background-image: linear-gradient(90deg, theme('colors.brand-primary-dark'), theme('colors.brand-secondary-dark')) !important;
+      text-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* Styled Scrollbar for the whole page (WebKit) */
+    body::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    html.light body::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 20px;
+    }
+
+    /* gray-300 */
+    html.dark body::-webkit-scrollbar-thumb {
+      background-color: #4b5563;
+      border-radius: 20px;
+    }
+
+    /* gray-600 */
+    html.light body::-webkit-scrollbar-thumb:hover {
+      background-color: #9ca3af;
+    }
+
+    /* gray-400 */
+    html.dark body::-webkit-scrollbar-thumb:hover {
+      background-color: #6b7280;
+    }
+
+    /* gray-500 */
+    /* Firefox scrollbar styling */
+    body {
+      scrollbar-width: thin;
+    }
+
+    html.light body {
+      scrollbar-color: #cbd5e1 transparent;
+    }
+
+    html.dark body {
+      scrollbar-color: #4b5563 transparent;
+    }
+
+
+    .card {
+      transition: all 0.3s ease-in-out;
+      border-radius: 0.75rem;
+      /* rounded-xl */
+      overflow: hidden;
+      position: relative;
+      border: 1px solid;
+    }
+
+    html.light .card {
+      border-color: #e5e7eb;
+      /* gray-200 */
+      background-color: #ffffff;
+      /* white */
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06), 0 2px 8px -3px rgba(0, 0, 0, 0.04);
+    }
+
+    html.dark .card {
+      border-color: #374151;
+      /* gray-700 */
+      background-color: #1f2937;
+      /* gray-800 */
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.3), 0 2px 8px -3px rgba(0, 0, 0, 0.25);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background-image: linear-gradient(to right, theme('colors.brand-primary-light'), theme('colors.brand-secondary-light'));
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out, height 0.3s ease-in-out;
+      z-index: 1;
+    }
+
+    html.dark .card::before {
+      background-image: linear-gradient(to right, theme('colors.brand-primary-dark'), theme('colors.brand-secondary-dark'));
+    }
+
+    .card:hover::before {
+      opacity: 1;
+      height: 4px;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    html.light .card:hover {
+      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.08), 0 4px 12px -6px rgba(0, 0, 0, 0.08);
+    }
+
+    html.dark .card:hover {
+      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.4), 0 4px 12px -6px rgba(0, 0, 0, 0.35);
+    }
+
+    .nav-link {
+      position: relative;
+      padding-bottom: 6px;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    }
+
+    html.light .nav-link {
+      color: #374151;
+    }
+
+    /* gray-700 */
+    html.dark .nav-link {
+      color: #d1d5db;
+    }
+
+    /* gray-300 */
+    .nav-link:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    html.dark .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    html.light .nav-link:hover,
+    html.light .nav-link.active {
+      color: theme('colors.brand-primary-light');
+    }
+
+    html.dark .nav-link:hover,
+    html.dark .nav-link.active {
+      color: theme('colors.brand-primary-dark');
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 3px;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: theme('colors.brand-primary-light');
+      transition: width 0.3s ease-in-out;
+      border-radius: 2px;
+    }
+
+    html.dark .nav-link::after {
+      background-color: theme('colors.brand-primary-dark');
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 60%;
+    }
+
+    .nav-link.active {
+      font-weight: 600;
+    }
+
+    .music-platform-badge {
+      transition: all 0.3s ease-in-out;
+      border: 1px solid transparent;
+    }
+
+    html.light .music-platform-badge {
+      background-color: #ffffff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    html.dark .music-platform-badge {
+      background-color: #374151;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .music-platform-badge:hover {
+      transform: translateY(-4px) scale(1.03);
+    }
+
+    html.light .music-platform-badge:hover {
+      border-color: #d1d5db;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    html.dark .music-platform-badge:hover {
+      border-color: #4b5563;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .api-endpoint {
+      padding: 1.25rem;
+    }
+
+    .card-header-api {
+      padding: 0.75rem 1.25rem;
+      margin: -1.25rem -1.25rem 1rem -1.25rem;
+      border-bottom: 1px solid;
+      border-top-left-radius: 0.75rem;
+      border-top-right-radius: 0.75rem;
+    }
+
+    html.light .card-header-api {
+      background-color: #f9fafb;
+      border-bottom-color: #f3f4f6;
+    }
+
+    html.dark .card-header-api {
+      background-color: #374151;
+      border-bottom-color: #4b5563;
+    }
+
+    .card-header-api h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .card-header-api p {
+      font-size: 0.85rem;
+    }
+
+    html.light .card-header-api h4 {
+      color: #111827;
+    }
+
+    html.dark .card-header-api h4 {
+      color: #f3f4f6;
+    }
+
+    html.light .card-header-api p {
+      color: #4b5563;
+    }
+
+    html.dark .card-header-api p {
+      color: #d1d5db;
+    }
+
+    .code-path {
+      padding: 0.6rem 0.85rem;
+      border-radius: 0.5rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid;
+    }
+
+    html.light .code-path {
+      background-color: #f3f4f6;
+      border-color: #e5e7eb;
+    }
+
+    html.dark .code-path {
+      background-color: #111827;
+      border-color: #374151;
+    }
+
+    .code-path code {
+      font-size: 0.8rem !important;
+      background-color: transparent !important;
+    }
+
+    html.light .code-path code {
+      color: #1f2937
+    }
+
+    html.dark .code-path code {
+      color: #d1d5db
+    }
+
+    code.inline-code {
+      padding: 0.15rem 0.4rem;
+      font-size: 0.8em;
+      border-radius: 0.25rem;
+      border: 1px solid;
+    }
+
+    html.light code.inline-code {
+      background-color: #e5e7eb;
+      color: #1f2937;
+      border-color: #d1d5db;
+    }
+
+    html.dark code.inline-code {
+      background-color: #4b5563;
+      color: #e5e7eb;
+      border-color: #6b7280;
+    }
+
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+      animation: tabFadeIn 0.4s ease-out;
+    }
+
+    @keyframes tabFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    html.light .tab-btn {
+      color: #4b5563;
+    }
+
+    html.dark .tab-btn {
+      color: #9ca3af;
+    }
+
+    html.light .tab-btn.active {
+      color: theme('colors.brand-primary-light');
+      border-bottom-color: theme('colors.brand-primary-light');
+    }
+
+    html.dark .tab-btn.active {
+      color: theme('colors.brand-primary-dark');
+      border-bottom-color: theme('colors.brand-primary-dark');
+    }
+
+    .code-block {
+      padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+      font-size: 0.875rem;
+      line-height: 1.75;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    html.light .code-block {
+      background-color: #1f2937;
+      color: #d1d5db;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    html.dark .code-block {
+      background-color: #030712;
+      color: #cbd5e1;
+    }
+
+    .code-lang-identifier {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.85rem;
+      font-size: 0.6rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 0.25rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      z-index: 5;
+    }
+
+    html.light .code-lang-identifier {
+      background-color: #4b5563;
+      color: #f3f4f6;
+    }
+
+    html.dark .code-lang-identifier {
+      background-color: #1f2937;
+      color: #9ca3af;
+    }
+
+    .scrollbar-styled::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .scrollbar-styled::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    html.light .scrollbar-styled::-webkit-scrollbar-thumb {
+      background-color: #9ca3af;
+      border-radius: 20px;
+    }
+
+    html.dark .scrollbar-styled::-webkit-scrollbar-thumb {
+      background-color: #6b7280;
+      border-radius: 20px;
+    }
+
+    html.light .scrollbar-styled::-webkit-scrollbar-thumb:hover {
+      background-color: #6b7280;
+    }
+
+    html.dark .scrollbar-styled::-webkit-scrollbar-thumb:hover {
+      background-color: #4b5563;
+    }
+
+    .scrollbar-styled {
+      scrollbar-width: thin;
+    }
+
+    html.light .scrollbar-styled {
+      scrollbar-color: #9ca3af transparent;
+    }
+
+    html.dark .scrollbar-styled {
+      scrollbar-color: #6b7280 transparent;
+    }
+
+    .http-method {
+      padding: 0.25rem 0.75rem 0.25rem 1.1rem;
+      border-radius: 0.375rem;
+      font-weight: 600;
+      font-size: 0.7rem;
+      margin-right: 0.6rem;
+      position: relative;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      text-transform: uppercase;
+      line-height: 1.1;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+      letter-spacing: 0.025em;
+    }
+
+    .http-method::before {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: white;
+      position: absolute;
+      left: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .http-get {
+      background-image: linear-gradient(to right, #34d399, #059669);
+    }
+
+    .http-post {
+      background-image: linear-gradient(to right, #60a5fa, #2563eb);
+    }
+
+    .parameter-group-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+      margin-top: 1rem;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid;
+    }
+
+    html.light .parameter-group-title {
+      color: #374151;
+      border-bottom-color: #e5e7eb;
+    }
+
+    html.dark .parameter-group-title {
+      color: #d1d5db;
+      border-bottom-color: #374151;
+    }
+
+    .parameter-entry {
+      transition: background-color 0.2s ease-in-out;
+      padding: 0.75rem 0.5rem;
+    }
+
+    html.light .parameter-entry:hover {
+      background-color: #f9fafb;
+    }
+
+    html.dark .parameter-entry:hover {
+      background-color: #374151;
+    }
+
+    .parameter-name-indicator {
+      font-size: 0.6em;
+      margin-right: 0.35rem;
+    }
+
+    html.light .parameter-name-indicator {
+      color: theme('colors.brand-primary-light');
+    }
+
+    html.dark .parameter-name-indicator {
+      color: theme('colors.brand-primary-dark');
+    }
+
+    code.parameter-name {
+      background-color: transparent !important;
+      padding: 0 !important;
+      font-size: 0.95em !important;
+      font-weight: 500;
+    }
+
+    html.light code.parameter-name {
+      color: #1f2937;
+    }
+
+    html.dark code.parameter-name {
+      color: #e5e7eb;
+    }
+
+    .parameter-type {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 0.25rem;
+      font-weight: 500;
+      border: 1px solid;
+    }
+
+    .parameter-type-string {
+      background-color: #e0e7ff;
+      color: #4338ca;
+      border-color: #c7d2fe;
+    }
+
+    html.dark .parameter-type-string {
+      background-color: #3730a3;
+      color: #a5b4fc;
+      border-color: #4f46e5;
+    }
+
+    .parameter-type-mixed {
+      background-color: #f0fdfa;
+      color: #0f766e;
+      border-color: #99f6e4;
+    }
+
+    html.dark .parameter-type-mixed {
+      background-color: #134e4a;
+      color: #5eead4;
+      border-color: #2dd4bf;
+    }
+
+    .parameter-requirement {
+      font-size: 0.65rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .parameter-requirement i {
+      font-size: 0.7em;
+      margin-right: 0.2rem;
+    }
+
+    .parameter-required {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    html.dark .parameter-required {
+      background-color: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    .parameter-optional {
+      background-color: #f0f9ff;
+      color: #0369a1;
+    }
+
+    html.dark .parameter-optional {
+      background-color: #0c4a6e;
+      color: #7dd3fc;
+    }
+
+    .parameter-description {
+      font-size: 0.8rem;
+    }
+
+    html.light .parameter-description {
+      color: #4b5563;
+    }
+
+    html.dark .parameter-description {
+      color: #9ca3af;
+    }
+
+    .btn-primary-enhanced {
+      transition: all 0.25s ease-out, transform 0.1s ease-out;
+      border: 1px solid transparent;
+    }
+
+    html.light .btn-primary-enhanced {
+      box-shadow: 0 4px 10px -2px rgba(59, 130, 246, 0.3), 0 2px 6px -3px rgba(59, 130, 246, 0.2);
+    }
+
+    html.dark .btn-primary-enhanced {
+      box-shadow: 0 4px 10px -2px rgba(96, 165, 250, 0.3), 0 2px 6px -3px rgba(96, 165, 250, 0.2);
+    }
+
+    .btn-primary-enhanced:hover {
+      transform: translateY(-3px) scale(1.02);
+    }
+
+    html.light .btn-primary-enhanced:hover {
+      box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3), 0 4px 10px -4px rgba(59, 130, 246, 0.2);
+    }
+
+    html.dark .btn-primary-enhanced:hover {
+      box-shadow: 0 10px 20px -5px rgba(96, 165, 250, 0.3), 0 4px 10px -4px rgba(96, 165, 250, 0.2);
+    }
+
+    .btn-primary-enhanced:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+
+    html.light .btn-primary-enhanced:active {
+      box-shadow: 0 2px 4px -1px rgba(59, 130, 246, 0.2), 0 1px 2px -1px rgba(59, 130, 246, 0.1);
+    }
+
+    html.dark .btn-primary-enhanced:active {
+      box-shadow: 0 2px 4px -1px rgba(96, 165, 250, 0.2), 0 1px 2px -1px rgba(96, 165, 250, 0.1);
+    }
+
+
+    .refresh-btn {
+      padding: 0.3rem;
+      line-height: 1;
+      font-size: 0.8rem;
+      transition: all 0.2s ease-in-out;
+      border-radius: 9999px;
+    }
+
+    .refresh-btn:hover {
+      transform: rotate(45deg) scale(1.1);
+    }
+
+    html.light .refresh-btn:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    html.dark .refresh-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-black">
+  <header
+    class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg shadow-md dark:shadow-slate-700/30 sticky top-0 z-50">
+    <div class="container mx-auto px-4 sm:px-6 py-3">
+      <div class="flex items-center justify-between">
+        <a href="/" class="flex items-center">
+          <i class="fas fa-music text-3xl text-brand-primary-light dark:text-brand-primary-dark mr-3"></i>
+          <h1 class="text-2xl font-bold gradient-text">Meting API</h1>
+        </a>
+        <nav id="main-nav" class="hidden md:flex md:items-center space-x-5 lg:space-x-6">
+          <a href="#features" class="nav-link font-medium">功能特性</a>
+          <a href="#documentation" class="nav-link font-medium">接口文档</a>
+          <a href="#examples" class="nav-link font-medium">示例代码</a>
+          <a href="#authentication" class="nav-link font-medium">鉴权说明</a>
+          <a href="/api-docs.html" class="nav-link font-medium flex items-center">
+            <i class="fas fa-book-open mr-1.5"></i> 新版文档
+            <span class="ml-1.5 text-xs bg-brand-primary-light text-white px-1.5 py-0.5 rounded-full">新</span>
+          </a>
+        </nav>
+        <div class="flex items-center">
+          <button id="theme-toggle-button"
+            class="text-gray-600 hover:text-brand-primary-light focus:outline-none p-2 rounded-full dark:text-gray-400 dark:hover:text-brand-primary-dark mr-1 hover:bg-gray-100 dark:hover:bg-slate-700"
+            aria-label="Toggle dark mode">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
+          <button id="mobile-menu-button"
+            class="md:hidden text-gray-600 hover:text-brand-primary-light focus:outline-none p-1.5 rounded-md dark:text-gray-400 dark:hover:text-brand-primary-dark hover:bg-gray-100 dark:hover:bg-slate-700"
+            aria-label="Toggle menu">
+            <i id="menu-icon" class="fas fa-bars text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu-container"
+      class="hidden md:hidden bg-white dark:bg-slate-800 shadow-xl dark:shadow-slate-700/50 absolute top-full left-0 right-0 z-40 border-t border-gray-200 dark:border-slate-700">
+      <a href="#features"
+        class="block py-3 px-5 text-gray-700 hover:bg-slate-100 dark:text-gray-300 dark:hover:bg-slate-700/70 dark:hover:text-brand-primary-dark">功能特性</a>
+      <a href="#documentation"
+        class="block py-3 px-5 text-gray-700 hover:bg-slate-100 dark:text-gray-300 dark:hover:bg-slate-700/70 dark:hover:text-brand-primary-dark">接口文档</a>
+      <a href="#examples"
+        class="block py-3 px-5 text-gray-700 hover:bg-slate-100 dark:text-gray-300 dark:hover:bg-slate-700/70 dark:hover:text-brand-primary-dark">示例代码</a>
+      <a href="#authentication"
+        class="block py-3 px-5 text-gray-700 hover:bg-slate-100 dark:text-gray-300 dark:hover:bg-slate-700/70 dark:hover:text-brand-primary-dark">鉴权说明</a>
+      <a href="/api-docs.html"
+        class="block py-3 px-5 text-gray-700 hover:bg-slate-100 dark:text-gray-300 dark:hover:bg-slate-700/70 dark:hover:text-brand-primary-dark flex items-center">
+        <i class="fas fa-book-open mr-2"></i> 新版文档
+        <span class="ml-2 text-xs bg-brand-primary-light text-white px-1.5 py-0.5 rounded-full">新</span>
+      </a>
+    </div>
+  </header>
+
+  <section id="hero"
+    class="py-16 md:py-24 lg:py-32 bg-gradient-to-br from-slate-100 via-gray-50 to-slate-200 dark:from-slate-900 dark:via-black dark:to-slate-800">
+    <div class="container mx-auto px-4 sm:px-6 text-center">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-emphasis leading-tight">
+          强大而优雅的<span class="gradient-text">音乐服务接口</span></h1>
+        <p class="text-lg md:text-xl text-muted mb-10 sm:mb-12">
+          支持多平台无缝集成，为您的应用提供全面的音乐服务能力</p>
+        <div class="flex flex-wrap justify-center gap-4 sm:gap-5 mb-10 sm:mb-14">
+          <!-- MODIFICATION START: Updated Music Platform Badges -->
+          <div class="music-platform-badge flex items-center px-4 py-2.5 rounded-full">
+            <i class="fab fa-napster text-xl mr-2.5 text-red-500 dark:text-red-400"></i>
+            <span class="font-medium text-sm text-red-500 dark:text-red-400">网易云音乐</span>
+          </div>
+          <div class="music-platform-badge flex items-center px-4 py-2.5 rounded-full">
+            <i class="fab fa-qq text-xl mr-2.5 text-blue-500 dark:text-blue-400"></i>
+            <span class="font-medium text-sm text-blue-500 dark:text-blue-400">QQ音乐</span>
+          </div>
+          <div class="music-platform-badge flex items-center px-4 py-2.5 rounded-full">
+            <i class="fas fa-headphones-alt text-xl mr-2.5 text-green-500 dark:text-green-400"></i>
+            <span class="font-medium text-sm text-green-500 dark:text-green-400">酷狗音乐</span>
+          </div>
+          <div class="music-platform-badge flex items-center px-4 py-2.5 rounded-full">
+            <i class="fas fa-compact-disc text-xl mr-2.5 text-purple-500 dark:text-purple-400"></i>
+            <span class="font-medium text-sm text-purple-500 dark:text-purple-400">酷我音乐</span>
+          </div>
+          <!-- MODIFICATION END: Updated Music Platform Badges -->
+        </div>
+        <div>
+          <a href="#documentation"
+            class="btn-primary-enhanced text-white font-semibold py-3 px-8 sm:py-3.5 sm:px-12 rounded-full inline-flex items-center text-base sm:text-lg bg-gradient-to-r from-brand-primary-light to-brand-secondary-light hover:from-blue-600 hover:to-indigo-700 dark:from-brand-primary-dark dark:to-brand-secondary-dark dark:hover:from-blue-500 dark:hover:to-indigo-600">
+            <i class="fas fa-rocket mr-2.5"></i>开始使用
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="py-16 sm:py-20 bg-white dark:bg-slate-800">
+    <div class="container mx-auto px-4 sm:px-6">
+      <h2 class="text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16 text-emphasis">
+        核心<span class="gradient-text">功能特性</span></h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="card p-8 fade-in">
+          <div class="text-brand-primary-light dark:text-brand-primary-dark mb-5"> <i class="fas fa-bolt text-4xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-emphasis">多平台支持</h3>
+          <p class="text-muted leading-relaxed">集成网易云音乐、QQ音乐、酷狗音乐、酷我音乐四大平台，一站式解决音乐服务需求。</p>
+        </div>
+        <div class="card p-8 fade-in" style="animation-delay: 0.1s;">
+          <div class="text-brand-primary-light dark:text-brand-primary-dark mb-5"> <i
+              class="fas fa-shield-alt text-4xl"></i> </div>
+          <h3 class="text-xl font-semibold mb-3 text-emphasis">安全鉴权</h3>
+          <p class="text-muted leading-relaxed">采用HMAC-SHA256签名算法，包含时间戳和随机数，有效防止重放攻击。</p>
+        </div>
+        <div class="card p-8 fade-in md:col-span-2 lg:col-span-1" style="animation-delay: 0.2s;">
+          <div class="text-brand-primary-light dark:text-brand-primary-dark mb-5"> <i
+              class="fas fa-tachometer-alt text-4xl"></i> </div>
+          <h3 class="text-xl font-semibold mb-3 text-emphasis">高性能</h3>
+          <p class="text-muted leading-relaxed">优化的接口设计，毫秒级响应，支持高并发请求，满足各种业务场景需求。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="documentation" class="py-16 sm:py-20 bg-slate-100 dark:bg-slate-900">
+    <div class="container mx-auto px-4 sm:px-6">
+      <h2 class="text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16 text-emphasis">
+        接口<span class="gradient-text">文档</span></h2>
+      <div class="max-w-5xl mx-auto">
+        <div
+          class="flex overflow-x-auto scrollbar-styled pb-3 mb-8 border-b border-gray-300 dark:border-slate-700 justify-start sm:justify-center">
+          <button class="tab-btn py-2.5 px-6 font-medium active" onclick="openTab(event, 'endpoints')"
+            data-tab="endpoints">API端点</button>
+          <button class="tab-btn py-2.5 px-6 font-medium" onclick="openTab(event, 'parameters_info')"
+            data-tab="parameters_info">参数说明</button>
+          <button class="tab-btn py-2.5 px-6 font-medium" onclick="openTab(event, 'responses')"
+            data-tab="responses">返回示例</button>
+        </div>
+
+        <div class="flex justify-center mb-12">
+          <a href="/api-docs.html"
+            class="btn-primary-enhanced flex items-center bg-gradient-to-r from-brand-primary-light to-purple-500 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:shadow-lg dark:from-brand-primary-dark dark:to-purple-600">
+            <i class="fas fa-external-link-alt mr-2"></i> 查看新版API文档
+            <span
+              class="ml-2 bg-white text-brand-primary-light dark:text-brand-primary-dark text-xs px-1.5 py-0.5 rounded-full">推荐</span>
+          </a>
+        </div>
+
+        <div id="parameters_info" class="tab-content">
+          <div class="card p-6 sm:p-8 mb-6">
+            <h3 class="text-xl font-semibold mb-5 flex items-center text-emphasis">
+              <i class="fas fa-info-circle text-brand-primary-light dark:text-brand-primary-dark mr-3"></i> 参数说明方式
+            </h3>
+            <p class="text-muted leading-relaxed">
+              具体的请求参数（包括Query参数和Header参数）已在各个 "API端点" 的描述中详细列出。请直接参考每个端点的说明。通用鉴权流程请参见 "<a href="#authentication"
+                class="text-brand-primary-light hover:underline dark:text-brand-primary-dark">鉴权说明</a>" 部分。
+            </p>
+            <p class="text-muted mt-4 text-sm leading-relaxed">
+              参数类型说明:
+            <ul class="list-disc list-inside ml-4 mt-2 space-y-1 text-xs">
+              <li><span class="parameter-type parameter-type-string mr-1.5">string</span>: 文本字符串</li>
+              <li><span class="parameter-type parameter-type-mixed mr-1.5">mixed</span>: 多种可能的值 (例如枚举)</li>
+            </ul>
+            </p>
+          </div>
+        </div>
+
+        <div id="endpoints" class="tab-content active">
+          <div class="space-y-6 sm:space-y-8">
+            <div class="api-endpoint card">
+              <div class="flex items-start">
+                <div
+                  class="bg-orange-100 dark:bg-orange-500/20 text-orange-500 dark:text-orange-400 rounded-full p-3 mr-4 mt-1 flex-shrink-0">
+                  <i class="fas fa-cog text-lg"></i>
+                </div>
+                <div class="flex-grow">
+                  <div class="card-header-api">
+                    <h4> 获取前端配置 (无需鉴权)</h4>
+                    <p> 获取前端进行API调用所需的API密钥等配置信息。</p>
+                  </div>
+                  <div class="text-sm mb-2 px-1">
+                    <p class="font-semibold text-emphasis mb-1">路径: </p>
+                    <div class="code-path scrollbar-styled"> <code
+                        class="code-font"><span class="http-method http-get">GET</span> <span class="api-base-url-placeholder-4"></span>/config</code>
+                    </div>
+                    <h5 class="parameter-group-title">Headers:</h5>
+                    <ul class="parameter-list text-muted text-sm">
+                      <li class="py-1.5">无特定认证头。</li>
+                    </ul>
+                    <h5 class="parameter-group-title">Query Parameters:</h5>
+                    <ul class="parameter-list text-muted text-sm">
+                      <li class="py-1.5">无。</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="api-endpoint card">
+              <div class="flex items-start">
+                <div
+                  class="bg-purple-100 dark:bg-purple-500/20 text-purple-500 dark:text-purple-400 rounded-full p-3 mr-4 mt-1 flex-shrink-0">
+                  <i class="fas fa-key text-lg"></i>
+                </div>
+                <div class="flex-grow">
+                  <div class="card-header-api">
+                    <h4> 获取鉴权参数</h4>
+                    <p> 获取访问受保护API所需的 <code class="inline-code">auth</code> 字符串。</p>
+                  </div>
+                  <div class="text-sm mb-2 px-1">
+                    <p class="font-semibold text-emphasis mb-1">路径: </p>
+                    <div class="code-path scrollbar-styled"> <code
+                        class="code-font"><span class="http-method http-get">GET</span> <span class="api-base-url-placeholder-3"></span>/auth</code>
+                    </div>
+                    <h5 class="parameter-group-title">Headers:</h5>
+                    <ul class="parameter-list divide-y divide-gray-200 dark:divide-slate-700">
+                      <li class="parameter-entry">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div class="flex items-center"> <span class="parameter-name-indicator">●</span> <code
+                              class="parameter-name">X-API-Key</code> <span
+                              class="parameter-type parameter-type-string ml-2.5">string</span> </div>
+                          <span class="parameter-requirement parameter-required self-start sm:self-center"><i
+                              class="fas fa-exclamation-circle"></i>必需</span>
+                        </div>
+                        <p class="parameter-description mt-1 sm:ml-5">从 <code class="inline-code">/api/config</code>
+                          获取的API密钥。</p>
+                      </li>
+                    </ul>
+                    <h5 class="parameter-group-title">Query Parameters:</h5>
+                    <ul class="parameter-list divide-y divide-gray-200 dark:divide-slate-700">
+                      <li class="parameter-entry">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div class="flex items-center"> <span class="parameter-name-indicator">●</span> <code
+                              class="parameter-name">path</code> <span
+                              class="parameter-type parameter-type-string ml-2.5">string</span> </div>
+                          <span class="parameter-requirement parameter-required self-start sm:self-center"><i
+                              class="fas fa-exclamation-circle"></i>必需</span>
+                        </div>
+                        <p class="parameter-description mt-1 sm:ml-5">目标API的完整路径及参数，例如 <code
+                            class="inline-code">/match?type=url&id=416892104</code>。</p>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="api-endpoint card">
+              <div class="flex items-start">
+                <div
+                  class="bg-blue-100 dark:bg-blue-500/20 text-blue-500 dark:text-blue-400 rounded-full p-3 mr-4 mt-1 flex-shrink-0">
+                  <i class="fas fa-link text-lg"></i>
+                </div>
+                <div class="flex-grow">
+                  <div class="card-header-api">
+                    <h4>匹配音乐资源 (URL/封面/歌词)</h4>
+                    <p>获取指定歌曲的播放地址、封面图片或歌词。</p>
+                  </div>
+                  <div class="text-sm mb-2 px-1">
+                    <p class="font-semibold text-emphasis mb-1">路径: </p>
+                    <div class="code-path scrollbar-styled"> <code
+                        class="code-font"><span class="http-method http-get">GET</span> <span class="api-base-url-placeholder-1"></span>/match</code>
+                    </div>
+                    <h5 class="parameter-group-title">Headers:</h5>
+                    <ul class="parameter-list divide-y divide-gray-200 dark:divide-slate-700">
+                      <li class="parameter-entry">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div class="flex items-center"> <span class="parameter-name-indicator">●</span> <code
+                              class="parameter-name">X-API-Key</code> <span
+                              class="parameter-type parameter-type-string ml-2.5">string</span> </div>
+                          <span class="parameter-requirement parameter-required self-start sm:self-center"><i
+                              class="fas fa-exclamation-circle"></i>必需</span>
+                        </div>
+                        <p class="parameter-description mt-1 sm:ml-5">API密钥。</p>
+                      </li>
+                    </ul>
+                    <h5 class="parameter-group-title">Query Parameters:</h5>
+                    <ul class="parameter-list divide-y divide-gray-200 dark:divide-slate-700">
+                      <li class="parameter-entry">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div class="flex items-center"> <span class="parameter-name-indicator">●</span> <code
+                              class="parameter-name">id</code> <span
+                              class="parameter-type parameter-type-string ml-2.5">string</span> </div>
+                          <span class="parameter-requirement parameter-required self-start sm:self-center"><i
+                              class="fas fa-exclamation-circle"></i>必需</span>
+                        </div>
+                        <p class="parameter-description mt-1 sm:ml-5">歌曲ID。</p>
+                      </li>
+                      <li class="parameter-entry">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div class="flex items-center"> <span class="parameter-name-indicator">●</span> <code
+                              class="parameter-name">type</code> <span
+                              class="parameter-type parameter-type-mixed ml-2.5">string</span> </div>
+                          <span class="parameter-requirement parameter-optional self-start sm:self-center">可选</span>
+                        </div>
+                        <p class="parameter-description mt-1 sm:ml-5"> 资源类型: <code class="inline-code">url</code>, <code
+                            class="inline-code">pic</code>, <code class="inline-code">lrc</code>。默认为 <code
+                            class="inline-code">url</code>。 </p>
+                      </li>
+                      <li class="parameter-entry">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div class="flex items-center"> <span class="parameter-name-indicator">●</span> <code
+                              class="parameter-name">server</code> <span
+                              class="parameter-type parameter-type-string ml-2.5">string</span> </div>
+                          <span class="parameter-requirement parameter-optional self-start sm:self-center">可选</span>
+                        </div>
+                        <p class="parameter-description mt-1 sm:ml-5">数据源，如 <code
+                            class="inline-code">netease,tencent</code>。默认为所有可用源。</p>
+                      </li>
+                      <li class="parameter-entry">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div class="flex items-center"> <span class="parameter-name-indicator">●</span> <code
+                              class="parameter-name">auth</code> <span
+                              class="parameter-type parameter-type-string ml-2.5">string</span> </div>
+                          <span class="parameter-requirement parameter-required self-start sm:self-center"><i
+                              class="fas fa-exclamation-circle"></i>必需</span>
+                        </div>
+                        <p class="parameter-description mt-1 sm:ml-5">从 <code class="inline-code">/api/auth</code>
+                          获取的鉴权字符串。</p>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="api-endpoint card">
+              <div class="flex items-start">
+                <div
+                  class="bg-green-100 dark:bg-green-500/20 text-green-500 dark:text-green-400 rounded-full p-3 mr-4 mt-1 flex-shrink-0">
+                  <i class="fas fa-search text-lg"></i>
+                </div>
+                <div class="flex-grow">
+                  <div class="card-header-api">
+                    <h4>搜索歌曲</h4>
+                    <p>根据关键词搜索歌曲。</p>
+                  </div>
+                  <div class="text-sm mb-2 px-1">
+                    <p class="font-semibold text-emphasis mb-1">路径: </p>
+                    <div class="code-path scrollbar-styled"> <code
+                        class="code-font"><span class="http-method http-get">GET</span> <span class="api-base-url-placeholder-2"></span>/search</code>
+                    </div>
+                    <h5 class="parameter-group-title">Headers:</h5>
+                    <ul class="parameter-list divide-y divide-gray-200 dark:divide-slate-700">
+                      <li class="parameter-entry">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div class="flex items-center"> <span class="parameter-name-indicator">●</span> <code
+                              class="parameter-name">X-API-Key</code> <span
+                              class="parameter-type parameter-type-string ml-2.5">string</span> </div>
+                          <span class="parameter-requirement parameter-required self-start sm:self-center"><i
+                              class="fas fa-exclamation-circle"></i>必需</span>
+                        </div>
+                        <p class="parameter-description mt-1 sm:ml-5">API密钥。</p>
+                      </li>
+                    </ul>
+                    <h5 class="parameter-group-title">Query Parameters:</h5>
+                    <ul class="parameter-list divide-y divide-gray-200 dark:divide-slate-700">
+                      <li class="parameter-entry">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div class="flex items-center"> <span class="parameter-name-indicator">●</span> <code
+                              class="parameter-name">name</code> <span
+                              class="parameter-type parameter-type-string ml-2.5">string</span> </div>
+                          <span class="parameter-requirement parameter-required self-start sm:self-center"><i
+                              class="fas fa-exclamation-circle"></i>必需</span>
+                        </div>
+                        <p class="parameter-description mt-1 sm:ml-5">搜索关键词。</p>
+                      </li>
+                      <li class="parameter-entry">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div class="flex items-center"> <span class="parameter-name-indicator">●</span> <code
+                              class="parameter-name">source</code> <span
+                              class="parameter-type parameter-type-string ml-2.5">string</span> </div>
+                          <span class="parameter-requirement parameter-optional self-start sm:self-center">可选</span>
+                        </div>
+                        <p class="parameter-description mt-1 sm:ml-5">数据源，如 <code class="inline-code">kuwo</code>, <code
+                            class="inline-code">kugou</code>。默认为 <code class="inline-code">kuwo</code>。</p>
+                      </li>
+                      <li class="parameter-entry">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div class="flex items-center"> <span class="parameter-name-indicator">●</span> <code
+                              class="parameter-name">auth</code> <span
+                              class="parameter-type parameter-type-string ml-2.5">string</span> </div>
+                          <span class="parameter-requirement parameter-required self-start sm:self-center"><i
+                              class="fas fa-exclamation-circle"></i>必需</span>
+                        </div>
+                        <p class="parameter-description mt-1 sm:ml-5">从 <code class="inline-code">/api/auth</code>
+                          获取的鉴权字符串。</p>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="api-endpoint card">
+              <div class="flex items-start">
+                <div
+                  class="bg-teal-100 dark:bg-teal-500/20 text-teal-500 dark:text-teal-400 rounded-full p-3 mr-4 mt-1 flex-shrink-0">
+                  <i class="fas fa-info-circle text-lg"></i>
+                </div>
+                <div class="flex-grow">
+                  <div class="card-header-api">
+                    <h4>获取服务信息</h4>
+                    <p>获取API服务的基本信息和版本。</p>
+                  </div>
+                  <div class="text-sm mb-2 px-1">
+                    <p class="font-semibold text-emphasis mb-1">路径: </p>
+                    <div class="code-path scrollbar-styled"> <code
+                        class="code-font"><span class="http-method http-get">GET</span> <span class="api-base-url-placeholder-5"></span>/info</code>
+                    </div>
+                    <h5 class="parameter-group-title">Headers:</h5>
+                    <ul class="parameter-list divide-y divide-gray-200 dark:divide-slate-700">
+                      <li class="parameter-entry">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div class="flex items-center"> <span class="parameter-name-indicator">●</span> <code
+                              class="parameter-name">X-API-Key</code> <span
+                              class="parameter-type parameter-type-string ml-2.5">string</span> </div>
+                          <span class="parameter-requirement parameter-required self-start sm:self-center"><i
+                              class="fas fa-exclamation-circle"></i>必需</span>
+                        </div>
+                        <p class="parameter-description mt-1 sm:ml-5">API密钥。</p>
+                      </li>
+                    </ul>
+                    <h5 class="parameter-group-title">Query Parameters:</h5>
+                    <ul class="parameter-list divide-y divide-gray-200 dark:divide-slate-700">
+                      <li class="parameter-entry">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div class="flex items-center"> <span class="parameter-name-indicator">●</span> <code
+                              class="parameter-name">auth</code> <span
+                              class="parameter-type parameter-type-string ml-2.5">string</span> </div>
+                          <span class="parameter-requirement parameter-required self-start sm:self-center"><i
+                              class="fas fa-exclamation-circle"></i>必需</span>
+                        </div>
+                        <p class="parameter-description mt-1 sm:ml-5">从 <code class="inline-code">/api/auth</code>
+                          获取的鉴权字符串。</p>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="responses" class="tab-content">
+          <div class="card p-6 sm:p-8">
+            <h3 class="text-xl font-semibold mb-6 flex items-center text-emphasis">
+              <i class="fas fa-code text-brand-primary-light dark:text-brand-primary-dark mr-3"></i> 返回示例
+            </h3>
+            <div class="space-y-8">
+              <div>
+                <h4
+                  class="font-semibold mb-2.5 text-brand-primary-light dark:text-brand-primary-dark text-base cursor-pointer response-toggler">
+                  <i class="fas fa-plus-square toggle-icon mr-2"></i>获取前端配置响应 (/config)
+                </h4>
+                <div class="code-block scrollbar-styled w-full">
+                  <span class="code-lang-identifier">JSON</span>
+                  <pre id="response-example-config">加载中...</pre>
+                </div>
+              </div>
+              <div>
+                <h4
+                  class="font-semibold mb-2.5 text-brand-primary-light dark:text-brand-primary-dark text-base cursor-pointer response-toggler">
+                  <i class="fas fa-plus-square toggle-icon mr-2"></i>获取鉴权参数响应 (/auth)
+                </h4>
+                <div class="code-block scrollbar-styled w-full">
+                  <span class="code-lang-identifier">JSON</span>
+                  <pre id="response-example-auth">加载中...</pre>
+                </div>
+              </div>
+              <div>
+                <h4
+                  class="font-semibold mb-2.5 text-brand-primary-light dark:text-brand-primary-dark text-base cursor-pointer response-toggler">
+                  <i class="fas fa-plus-square toggle-icon mr-2"></i>匹配音乐URL响应 (/match?type=url)
+                </h4>
+                <div class="code-block scrollbar-styled w-full">
+                  <span class="code-lang-identifier">JSON</span>
+                  <pre id="response-example-match-url">加载中...</pre>
+                </div>
+              </div>
+              <div>
+                <h4
+                  class="font-semibold mb-2.5 text-brand-primary-light dark:text-brand-primary-dark text-base cursor-pointer response-toggler">
+                  <i class="fas fa-plus-square toggle-icon mr-2"></i>搜索歌曲响应 (/search)
+                </h4>
+                <div class="code-block scrollbar-styled w-full">
+                  <span class="code-lang-identifier">JSON</span>
+                  <pre id="response-example-search">加载中...</pre>
+                </div>
+              </div>
+              <div>
+                <h4
+                  class="font-semibold mb-2.5 text-brand-primary-light dark:text-brand-primary-dark text-base cursor-pointer response-toggler">
+                  <i class="fas fa-plus-square toggle-icon mr-2"></i>获取服务信息响应 (/info)
+                </h4>
+                <div class="code-block scrollbar-styled w-full">
+                  <span class="code-lang-identifier">JSON</span>
+                  <pre id="response-example-info">加载中...</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="authentication" class="py-16 sm:py-20 bg-white dark:bg-slate-800">
+    <div class="container mx-auto px-4 sm:px-6">
+      <h2 class="text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16 text-emphasis">
+        鉴权<span class="gradient-text">说明</span></h2>
+      <div class="max-w-4xl mx-auto">
+        <div class="card p-6 sm:p-10">
+          <div class="flex items-start mb-8">
+            <div
+              class="bg-red-100 dark:bg-red-500/20 text-red-500 dark:text-red-400 rounded-full p-3 sm:p-3.5 mr-4 sm:mr-5 flex-shrink-0">
+              <i class="fas fa-lock text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold mb-3 text-emphasis">API鉴权流程</h3>
+              <p class="text-muted mb-5 text-base leading-relaxed">
+                大部分API接口（除 <code class="inline-code">/api/config</code> 外）都需要鉴权。请遵循以下步骤：
+              </p>
+              <ol class="list-decimal list-inside space-y-4 text-base text-muted leading-relaxed">
+                <li>
+                  <strong>获取API密钥:</strong> 调用 <code class="inline-code">GET /api/config</code> (此接口无需任何鉴权) 获取 <code
+                    class="inline-code">X-API-Key</code>。
+                  <div class="text-sm text-gray-500 dark:text-gray-400/80 pl-5 mt-1.5">此密钥应在后续请求中作为 <code
+                      class="inline-code">X-API-Key</code> HTTP请求头发送。</div>
+                </li>
+                <li>
+                  <strong>获取Auth参数:</strong> 调用 <code
+                    class="inline-code">GET /api/auth?path=<target_path_with_params></code>。
+                  <ul
+                    class="list-disc list-inside pl-10 text-sm text-gray-500 dark:text-gray-400/80 mt-1.5 space-y-1.5">
+                    <li>请求头中必须包含上一步获取的 <code class="inline-code">X-API-Key</code>。</li>
+                    <li><code class="inline-code">path</code> Query参数应为您要调用的受保护API的完整路径及其参数 (例如, <code
+                        class="inline-code">/match?type=url&id=12345</code>)。</li>
+                    <li>此接口会返回一个包含 <code class="inline-code">auth</code> 字符串 (<code
+                        class="inline-code">SIGNATURE|TIMESTAMP|NONCE</code>) 的JSON响应。</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>调用目标API:</strong> 使用上一步获取的 <code class="inline-code">auth</code> 字符串作为Query参数，并携带 <code
+                    class="inline-code">X-API-Key</code> 请求头，调用您需要的API接口 (例如 <code
+                    class="inline-code">/api/match</code>, <code class="inline-code">/api/search</code>)。
+                </li>
+              </ol>
+            </div>
+          </div>
+
+          <div
+            class="bg-yellow-50 dark:bg-yellow-700/20 border-l-4 border-yellow-400 dark:border-yellow-500 p-4 mb-8 rounded-r-md">
+            <div class="flex">
+              <div class="flex-shrink-0 pt-0.5"> <i
+                  class="fas fa-exclamation-triangle text-yellow-500 dark:text-yellow-400"></i> </div>
+              <div class="ml-3">
+                <p class="text-sm text-yellow-700 dark:text-yellow-200 leading-relaxed">
+                  通过 <code
+                    class="inline-code bg-yellow-100 dark:bg-yellow-600/30 text-yellow-800 dark:text-yellow-100">/api/auth</code>
+                  获取的 <code
+                    class="inline-code bg-yellow-100 dark:bg-yellow-600/30 text-yellow-800 dark:text-yellow-100">auth</code>
+                  参数有效期为<strong class="font-medium">300秒</strong>，过期后需要重新生成。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-8">
+            <h4 class="text-lg font-semibold mb-4 text-emphasis flex items-center">
+              <i class="fas fa-shield-alt text-brand-primary-light dark:text-brand-primary-dark mr-2.5"></i>鉴权参数说明
+            </h4>
+            <div
+              class="bg-blue-50 dark:bg-slate-700/40 p-5 rounded-lg border-l-4 border-brand-primary-light dark:border-brand-primary-dark mb-4">
+              <div class="space-y-5">
+                <div class="bg-white dark:bg-slate-700/70 rounded-lg p-4 shadow-sm">
+                  <h5
+                    class="font-semibold text-brand-primary-light dark:text-brand-primary-dark mb-2.5 flex items-center text-base">
+                    <i class="fas fa-key text-yellow-500 dark:text-yellow-400 mr-2"></i>请求头 (X-API-Key)
+                  </h5>
+                  <p class="text-muted text-sm mb-3 leading-relaxed"> 对于需要鉴权的API接口 (除 <code
+                      class="inline-code">/api/config</code> 外，<code class="inline-code">/api/auth</code>
+                    也需要)，必须包含以下HTTP请求头： </p>
+                  <div class="code-block scrollbar-styled w-full">
+                    <span class="code-lang-identifier">Header</span>
+                    <code>X-API-Key: {从/api/config获取的API密钥}</code>
+                  </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-700/70 rounded-lg p-4 shadow-sm">
+                  <h5
+                    class="font-semibold text-brand-primary-light dark:text-brand-primary-dark mb-2.5 flex items-center text-base">
+                    <i class="fas fa-signature text-green-500 dark:text-green-400 mr-2"></i>Query参数 (auth)
+                  </h5>
+                  <p class="text-muted text-sm mb-3 leading-relaxed"> 对于需要鉴权的API接口 (除 <code
+                      class="inline-code">/api/config</code> 和 <code class="inline-code">/api/auth</code>
+                    外)，必须包含以下Query参数： </p>
+                  <div class="code-block scrollbar-styled w-full">
+                    <span class="code-lang-identifier">Query</span>
+                    <code>auth={SIGNATURE}|{TIMESTAMP}|{NONCE}</code>
+                  </div>
+                  <p class="text-muted text-sm mt-3 leading-relaxed"> 此 <code class="inline-code">auth</code> 字符串通过调用
+                    <code class="inline-code">GET /api/auth?path=...</code> 接口获取，用于防止请求被篡改。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-lg font-semibold mb-4 text-emphasis flex items-center">
+              <i class="fas fa-stream text-purple-500 dark:text-purple-400 mr-2.5"></i>API调用流程示例
+            </h4>
+            <div
+              class="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-slate-700/70 dark:via-slate-700/50 dark:to-slate-600/70 p-5 rounded-lg border border-purple-200 dark:border-slate-600">
+              <div class="space-y-6">
+                <div>
+                  <div class="flex items-center mb-2.5">
+                    <div
+                      class="w-9 h-9 rounded-full bg-purple-500 dark:bg-purple-600 flex items-center justify-center text-white font-bold mr-3.5 flex-shrink-0 text-sm shadow-md">
+                      1</div>
+                    <h5
+                      class="font-semibold text-purple-700 dark:text-purple-300 text-base cursor-pointer auth-flow-toggler">
+                      <i class="fas fa-plus-square toggle-icon mr-2"></i>获取API Key
+                    </h5>
+                  </div>
+                  <div class="ml-12 space-y-2.5 content-to-toggle">
+                    <div class="code-block scrollbar-styled w-full">
+                      <span class="code-lang-identifier">Request</span>
+                      <code><span class="http-method http-get mr-1">GET</span> <span class="api-base-url-placeholder-5"></span>/config</code>
+                    </div>
+                    <div
+                      class="bg-white dark:bg-slate-800/60 p-3 rounded-md border-l-4 border-green-500 dark:border-green-400 shadow-sm">
+                      <p class="text-muted text-sm mb-1"> <span
+                          class="font-semibold text-green-600 dark:text-green-400">返回示例:</span> </p>
+                      <pre id="auth-flow-config-response"
+                        class="text-xs text-gray-700 dark:text-gray-300 overflow-x-auto scrollbar-styled">加载中...</pre>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex items-center mb-2.5">
+                    <div
+                      class="w-9 h-9 rounded-full bg-blue-500 dark:bg-blue-600 flex items-center justify-center text-white font-bold mr-3.5 flex-shrink-0 text-sm shadow-md">
+                      2</div>
+                    <h5
+                      class="font-semibold text-blue-700 dark:text-blue-300 text-base cursor-pointer auth-flow-toggler">
+                      <i class="fas fa-plus-square toggle-icon mr-2"></i>获取Auth参数
+                    </h5>
+                  </div>
+                  <div class="ml-12 space-y-2.5 content-to-toggle">
+                    <p class="text-muted text-sm"> 目标API: <code
+                        class="inline-code">/api/match?type=url&id=416892104</code> </p>
+                    <div class="code-block scrollbar-styled w-full">
+                      <span class="code-lang-identifier">Request</span>
+                      <div>
+                        <code><span class="http-method http-get mr-1">GET</span> <span class="api-base-url-placeholder-5"></span>/auth?path=/match?type=url&id=416892104</code>
+                      </div>
+                      <div>
+                        <code>X-API-Key: <span id="auth-flow-api-key" class="text-yellow-500 dark:text-yellow-400">加载中...</span></code>
+                      </div>
+                    </div>
+                    <div
+                      class="bg-white dark:bg-slate-800/60 p-3 rounded-md border-l-4 border-green-500 dark:border-green-400 shadow-sm">
+                      <p class="text-muted text-sm mb-1"> <span
+                          class="font-semibold text-green-600 dark:text-green-400">返回示例:</span> </p>
+                      <pre id="auth-flow-auth-response"
+                        class="text-xs text-gray-700 dark:text-gray-300 overflow-x-auto scrollbar-styled">加载中...</pre>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex items-center mb-2.5">
+                    <div
+                      class="w-9 h-9 rounded-full bg-green-500 dark:bg-green-600 flex items-center justify-center text-white font-bold mr-3.5 flex-shrink-0 text-sm shadow-md">
+                      3</div>
+                    <h5
+                      class="font-semibold text-green-700 dark:text-green-300 text-base cursor-pointer auth-flow-toggler">
+                      <i class="fas fa-plus-square toggle-icon mr-2"></i>调用目标API
+                    </h5>
+                  </div>
+                  <div class="ml-12 space-y-2.5 content-to-toggle">
+                    <div class="code-block scrollbar-styled w-full">
+                      <span class="code-lang-identifier">Request</span>
+                      <div>
+                        <code><span class="http-method http-get mr-1">GET</span> <span class="api-base-url-placeholder-5"></span>/match?type=url&id=416892104&auth=<span id="auth-flow-auth-param" class="text-yellow-500 dark:text-yellow-400">加载中...</span></code>
+                      </div>
+                      <div>
+                        <code>X-API-Key: <span id="auth-flow-api-key-2" class="text-yellow-500 dark:text-yellow-400">加载中...</span></code>
+                      </div>
+                    </div>
+                    <div
+                      class="bg-white dark:bg-slate-800/60 p-3 rounded-md border-l-4 border-green-500 dark:border-green-400 shadow-sm">
+                      <p class="text-muted text-sm mb-1"> <span
+                          class="font-semibold text-green-600 dark:text-green-400">返回示例:</span> </p>
+                      <pre id="auth-flow-match-response"
+                        class="text-xs text-gray-700 dark:text-gray-300 overflow-x-auto scrollbar-styled">加载中...</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer
+    class="footer bg-slate-800 dark:bg-black text-slate-400 dark:text-slate-400/80 py-10 sm:py-14 border-t border-slate-700 dark:border-slate-700/50">
+    <div class="container mx-auto px-4 sm:px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0 text-center md:text-left">
+          <div class="flex items-center justify-center md:justify-start">
+            <i class="fas fa-music text-2xl text-brand-primary-dark mr-3"></i>
+            <span class="text-xl font-bold text-white dark:text-slate-100">Meting API</span>
+          </div>
+          <p class="text-slate-400/80 dark:text-slate-500/80 mt-2 text-sm">强大而优雅的音乐服务接口</p>
+        </div>
+        <div class="flex space-x-5">
+          <a href="#" class="text-slate-400 hover:text-brand-primary-dark transition-colors duration-300"
+            aria-label="GitHub"> <i class="fab fa-github text-2xl"></i> </a>
+          <a href="#" class="text-slate-400 hover:text-brand-primary-dark transition-colors duration-300"
+            aria-label="Weixin"> <i class="fab fa-weixin text-2xl"></i> </a>
+          <a href="#" class="text-slate-400 hover:text-brand-primary-dark transition-colors duration-300"
+            aria-label="Email"> <i class="fas fa-envelope text-2xl"></i> </a>
+        </div>
+      </div>
+      <div
+        class="border-t border-slate-700/70 dark:border-slate-700/50 mt-8 pt-8 text-center text-slate-400/80 dark:text-slate-500/80 text-sm">
+        <p>此API基于 <a href="https://github.com/metowolf/Meting" target="_blank" rel="noopener noreferrer"
+            class="text-brand-primary-dark hover:underline">Meting</a> 构建</p>
+        <p class="mt-2">©
+          <script>document.write(new Date().getFullYear())</script> Meting API. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Utility function to ensure visibility in dark mode
+    function ensureVisibilityInDarkMode() {
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      if (isDarkMode) {
+        document.querySelectorAll('.gradient-text').forEach(text => {
+          text.style.zIndex = '10'; text.style.position = 'relative';
+        });
+      }
+    }
+    // Set API Base URL dynamically
+    function setApiBaseUrl() {
+      const apiUrl = `${window.location.protocol}//${window.location.hostname}${window.location.port ? ':' + window.location.port : ''}/api`;
+      for (let i = 1; i <= 10; i++) { // Ensure this loop covers all placeholders if you add more
+        document.querySelectorAll(`.api-base-url-placeholder-${i}`).forEach(el => { el.textContent = apiUrl; });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      ensureVisibilityInDarkMode(); // Call this early
+      setApiBaseUrl();
+    });
+
+    // Tab functionality
+    function openTab(evt, tabName) {
+      document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(tb => tb.classList.remove("active"));
+      document.getElementById(tabName).classList.add("active");
+      evt.currentTarget.classList.add("active");
+      setTimeout(ensureVisibilityInDarkMode, 50);
+    }
+
+    // Smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetElement = document.querySelector(this.getAttribute('href'));
+        if (targetElement) {
+          const headerOffset = 70;
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+        }
+        const mobileMenu = document.getElementById('mobile-menu-container');
+        const menuIcon = document.getElementById('menu-icon');
+        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.add('hidden');
+          menuIcon.classList.remove('fa-times'); menuIcon.classList.add('fa-bars');
+        }
+      });
+    });
+
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenuContainer = document.getElementById('mobile-menu-container');
+    const menuIcon = document.getElementById('menu-icon');
+    if (mobileMenuButton && mobileMenuContainer && menuIcon) {
+      mobileMenuButton.addEventListener('click', function () {
+        mobileMenuContainer.classList.toggle('hidden');
+        menuIcon.classList.toggle('fa-bars'); menuIcon.classList.toggle('fa-times');
+      });
+    }
+
+    // Animation on scroll
+    const fadeElements = document.querySelectorAll('.fade-in');
+    const fadeInObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const delay = parseFloat(entry.target.style.animationDelay) * 1000 || 0;
+          setTimeout(() => {
+            entry.target.style.opacity = 1; entry.target.style.transform = 'translateY(0)';
+          }, delay);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.05 });
+    fadeElements.forEach(element => fadeInObserver.observe(element));
+
+    // Active Nav Link highlighting
+    const sections = document.querySelectorAll("section[id]");
+    const navLinks = document.querySelectorAll("header nav a.nav-link");
+    window.addEventListener("scroll", () => {
+      let current = ""; const headerOffset = 80;
+      sections.forEach((section) => {
+        const sectionTop = section.offsetTop; const sectionHeight = section.clientHeight;
+        if (pageYOffset >= sectionTop - headerOffset && pageYOffset < sectionTop + sectionHeight - headerOffset) {
+          current = section.getAttribute("id");
+        }
+      });
+      navLinks.forEach((link) => {
+        link.classList.remove("active");
+        if (link.getAttribute("href") === `#${current}`) link.classList.add("active");
+      });
+      if (current === "" && sections.length > 0 && pageYOffset < sections[0].offsetTop - headerOffset && navLinks.length > 0 && navLinks[0]) {
+        navLinks[0].classList.add("active");
+      }
+    });
+    document.addEventListener('DOMContentLoaded', () => { window.dispatchEvent(new Event('scroll')); });
+
+    // Theme Toggle
+    (function () {
+      const htmlElement = document.documentElement;
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
+      ensureVisibilityInDarkMode(); // Ensure gradient text is visible on initial load with theme
+    })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const themeToggleButton = document.getElementById('theme-toggle-button');
+      const sunIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-12.66l-.707.707M4.04 19.96l-.707.707M21 12h-1M4 12H3m15.66 8.66l-.707-.707M5.76 5.76l-.707-.707M12 18a6 6 0 100-12 6 6 0 000 12z" /></svg>`;
+      const moonIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>`;
+
+      function applyTheme(theme) {
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+          if (themeToggleButton) themeToggleButton.innerHTML = sunIconSVG;
+          localStorage.setItem('theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          if (themeToggleButton) themeToggleButton.innerHTML = moonIconSVG;
+          localStorage.setItem('theme', 'light');
+        }
+        setTimeout(ensureVisibilityInDarkMode, 50);
+      }
+
+      if (themeToggleButton) {
+        themeToggleButton.addEventListener('click', () => {
+          const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+          applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+        // Apply initial icon based on current theme
+        applyTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      }
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) applyTheme(e.matches ? 'dark' : 'light');
+      });
+    });
+
+    // --- Live API Example Script ---
+    let cachedApiKey = null; const API_BASE_URL = '/api';
+    function showLoading(id) { const el = document.getElementById(id); if (el) el.innerHTML = '<span class="text-xs text-muted">加载中...</span>'; }
+    function showError(id, err) { const el = document.getElementById(id); if (el) { el.innerHTML = `<span class="text-xs text-red-500 dark:text-red-400">错误: ${err.message}</span>`; console.error(`Error for ${id}:`, err); } }
+    function prettyPrintJson(id, data) {
+      const el = document.getElementById(id); if (!el) return;
+      const jsonStr = JSON.stringify(data, null, 2);
+      const isDark = document.documentElement.classList.contains('dark');
+      const colors = { key: isDark ? '#80cbc4' : '#0d9488', string: isDark ? '#ce9178' : '#c026d3', number: isDark ? '#b5cea8' : '#2563eb', boolNull: isDark ? '#569cd6' : '#7c3aed', brace: isDark ? '#c6b069' : '#57534e' };
+      el.innerHTML = jsonStr.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>') // Correct HTML entity escaping
+        .replace(/"([^"]+)":/g, `<span style="color:${colors.key};">"$1"</span>:`)
+        .replace(/: "((?:[^"\\]|\\.)*)"/g, `: <span style="color:${colors.string};">"$1"</span>`)
+        .replace(/: ([0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)/g, `: <span style="color:${colors.number};">$1</span>`)
+        .replace(/: (true|false|null)/g, `: <span style="color:${colors.boolNull};">$1</span>`)
+        .replace(/([\{\}\[\]])/g, `<span style="color:${colors.brace};font-weight:bold;">$1</span>`);
+    }
+    async function fetchWithRetry(url, opts = {}, retries = 2, delay = 1000) {
+      let lastErr; for (let i = 0; i <= retries; i++) { try { const controller = new AbortController(); const signal = opts.signal || controller.signal; const timeoutId = setTimeout(() => controller.abort(), 15000); const res = await fetch(url, { ...opts, signal, cache: 'no-cache', headers: { ...opts.headers, 'Cache-Control': 'no-cache', 'Pragma': 'no-cache', 'Expires': '0' } }); clearTimeout(timeoutId); if (!res.ok) { const txt = await res.text().catch(() => ''); throw new Error(`HTTP ${res.status}. ${txt}`); } return await res.json(); } catch (err) { lastErr = err; if (i === retries || err.name === 'AbortError') throw lastErr; await new Promise(r => setTimeout(r, delay * Math.pow(2, i))); } } throw lastErr;
+    }
+    async function fetchApiKey() {
+      // 使用缓存的API密钥（如果有）
+      if (cachedApiKey) return cachedApiKey;
+
+      try {
+        // 从/api/config获取客户端API密钥
+        const data = await fetchWithRetry(`${API_BASE_URL}/config`);
+
+        // 提取API密钥（支持两种响应格式）
+        cachedApiKey = data.apiKey || (data.data ? data.data.apiKey : null);
+
+        if (cachedApiKey) return cachedApiKey;
+        throw new Error('API Key not in /config');
+      } catch (e) {
+        throw new Error(`API Key fetch: ${e.message}`);
+      }
+    }
+    async function fetchAuthToken(path, key) {
+      if (!key) throw new Error('API Key needed for auth token');
+
+      try {
+        // 使用API密钥获取鉴权参数
+        const data = await fetchWithRetry(`${API_BASE_URL}/auth?path=${encodeURIComponent(path)}`, {
+          headers: { 'X-API-Key': key }
+        });
+
+        // 提取鉴权参数（支持两种响应格式）
+        const token = data.auth || (data.data ? data.data.auth : null);
+
+        if (token) return token;
+        throw new Error('Auth token not in /auth');
+      } catch (e) {
+        throw new Error(`Auth Token fetch: ${e.message}`);
+      }
+    }
+    async function fetchAndDisplayApiData(cfg) {
+      const { targetElementId: id, apiPath: path, needsAuth = true, queryParams: params = {}, isAuthConfig = false, isAuthEndpoint = false } = cfg;
+
+      showLoading(id);
+
+      try {
+        let apiKey = cachedApiKey, data;
+
+        // 如果不是获取配置的请求，先获取API密钥
+        if (!isAuthConfig) apiKey = await fetchApiKey();
+
+        // 处理不同类型的请求
+        if (isAuthConfig) {
+          // 获取配置（不需要API密钥）
+          data = await fetchWithRetry(`${API_BASE_URL}${path}`);
+        } else if (isAuthEndpoint) {
+          // 获取鉴权参数
+          data = await fetchWithRetry(`${API_BASE_URL}${path}?path=${encodeURIComponent(params.path)}`, {
+            headers: { 'X-API-Key': apiKey }
+          });
+        } else if (needsAuth) {
+          // 需要鉴权的API请求
+          const query = Object.keys(params).length ? new URLSearchParams(params).toString() : '';
+          const targetPath = path + (query ? `?${query}` : '');
+          const token = await fetchAuthToken(targetPath, apiKey);
+          const fullPath = `${API_BASE_URL}${targetPath}${query ? '&' : '?'}auth=${encodeURIComponent(token)}`;
+
+          data = await fetchWithRetry(fullPath, {
+            headers: { 'X-API-Key': apiKey }
+          });
+        } else {
+          // 不需要鉴权的API请求
+          data = await fetchWithRetry(`${API_BASE_URL}${path}`, {
+            headers: { 'X-API-Key': apiKey }
+          });
+        }
+
+        prettyPrintJson(id, data);
+      } catch (e) {
+        showError(id, e);
+      }
+    }
+    function initLiveApiExamples() { fetchAndDisplayApiData({ targetElementId: 'response-example-config', apiPath: '/config', needsAuth: false, isAuthConfig: true }); fetchAndDisplayApiData({ targetElementId: 'response-example-auth', apiPath: '/auth', needsAuth: false, queryParams: { path: '/match?type=url&id=416892104' }, isAuthEndpoint: true }); fetchAndDisplayApiData({ targetElementId: 'response-example-match-url', apiPath: '/match', queryParams: { type: 'url', id: '416892104' } }); fetchAndDisplayApiData({ targetElementId: 'response-example-search', apiPath: '/search', queryParams: { name: '起风了' } }); fetchAndDisplayApiData({ targetElementId: 'response-example-info', apiPath: '/info' }); }
+    async function initAuthFlowExamples() {
+      // 定义需要更新的元素ID
+      const ids = {
+        cfg: 'auth-flow-config-response',
+        key: 'auth-flow-api-key',
+        key2: 'auth-flow-api-key-2',
+        authRes: 'auth-flow-auth-response',
+        authP: 'auth-flow-auth-param',
+        match: 'auth-flow-match-response'
+      };
+
+      // 显示加载状态
+      Object.values(ids).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) showLoading(id);
+      });
+
+      try {
+        // 获取客户端API密钥
+        const cfgData = await fetchWithRetry(`${API_BASE_URL}/config`);
+
+        // 从响应中提取API密钥（支持两种响应格式）
+        const apiKey = cfgData.apiKey || (cfgData.data ? cfgData.data.apiKey : null);
+
+        if (!apiKey) throw new Error('API Key missing in auth flow config.');
+
+        // 显示配置响应
+        prettyPrintJson(ids.cfg, cfgData);
+
+        // 显示掩码后的API密钥
+        const maskedKey = apiKey.length > 8 ? apiKey.substring(0, 5) + '...' + apiKey.substring(apiKey.length - 3) : apiKey;
+        document.getElementById(ids.key).textContent = maskedKey;
+        document.getElementById(ids.key2).textContent = maskedKey;
+
+        // 获取鉴权参数
+        const targetPath = '/match?type=url&id=416892104';
+        const authData = await fetchWithRetry(`${API_BASE_URL}/auth?path=${encodeURIComponent(targetPath)}`, {
+          headers: { 'X-API-Key': apiKey }
+        });
+
+        // 从响应中提取鉴权参数（支持两种响应格式）
+        const authParam = authData.auth || (authData.data ? authData.data.auth : null);
+
+        if (!authParam) throw new Error('Auth param missing in auth flow.');
+
+        // 显示鉴权响应
+        prettyPrintJson(ids.authRes, authData);
+
+        // 显示掩码后的鉴权参数
+        const authParts = authParam.split('|');
+        document.getElementById(ids.authP).textContent = authParts.length === 3 ?
+          `${authParts[0].substring(0, 8)}...|${authParts[1]}|${authParts[2].substring(0, 4)}...` : authParam;
+
+        // 使用API密钥和鉴权参数获取歌曲数据
+        const matchData = await fetchWithRetry(
+          `${API_BASE_URL}/match?type=url&id=416892104&auth=${encodeURIComponent(authParam)}`,
+          { headers: { 'X-API-Key': apiKey } }
+        );
+
+        // 显示歌曲数据响应
+        prettyPrintJson(ids.match, matchData);
+      } catch (e) {
+        // 处理错误
+        showError(ids.cfg, e);
+
+        // 如果前序步骤失败，显示相应错误
+        if (document.getElementById(ids.authRes)?.textContent.includes('加载中'))
+          showError(ids.authRes, new Error('前序步骤失败'));
+
+        if (document.getElementById(ids.match)?.textContent.includes('加载中'))
+          showError(ids.match, new Error('前序步骤失败'));
+      }
+    }
+    function addRefreshButton(parentId, actionFn, title, btnId, colorClasses) { const parent = document.querySelector(parentId); if (parent && !document.getElementById(btnId)) { const btn = document.createElement('button'); btn.id = btnId; btn.className = `refresh-btn absolute top-3 right-3 p-1.5 ${colorClasses} focus:outline-none focus:ring-2 focus:ring-offset-1`; btn.innerHTML = '<i class="fas fa-sync-alt text-xs"></i>'; btn.title = title; btn.onclick = function () { actionFn(); this.querySelector('i').classList.add('animate-spin-fast'); setTimeout(() => { if (this.querySelector('i')) this.querySelector('i').classList.remove('animate-spin-fast'); }, 700); }; parent.style.position = 'relative'; parent.appendChild(btn); } }
+
+    function setupResponseTogglers() {
+      const responseTab = document.getElementById('responses');
+      if (!responseTab) return;
+      responseTab.querySelectorAll('h4.response-toggler').forEach(toggler => {
+        const codeBlock = toggler.nextElementSibling;
+        if (codeBlock && codeBlock.classList.contains('code-block')) {
+          codeBlock.classList.add('hidden');
+          toggler.addEventListener('click', function () {
+            const icon = this.querySelector('i.toggle-icon');
+            codeBlock.classList.toggle('hidden');
+            if (icon) {
+              icon.classList.toggle('fa-plus-square');
+              icon.classList.toggle('fa-minus-square');
+            }
+          });
+        }
+      });
+    }
+
+    function setupAuthFlowTogglers() {
+      const authSection = document.getElementById('authentication');
+      if (!authSection) return;
+      const flowExampleContainer = authSection.querySelector('.bg-gradient-to-br');
+      if (!flowExampleContainer) return;
+      flowExampleContainer.querySelectorAll('h5.auth-flow-toggler').forEach(toggler => {
+        const contentToToggle = toggler.parentElement.nextElementSibling;
+        if (contentToToggle && contentToToggle.classList.contains('content-to-toggle')) {
+          contentToToggle.classList.add('hidden');
+          toggler.addEventListener('click', function () {
+            const icon = this.querySelector('i.toggle-icon');
+            contentToToggle.classList.toggle('hidden');
+            if (icon) {
+              icon.classList.toggle('fa-plus-square');
+              icon.classList.toggle('fa-minus-square');
+            }
+          });
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initial setup for togglers BEFORE API calls
+      setupResponseTogglers();
+      setupAuthFlowTogglers();
+
+      // API calls
+      initLiveApiExamples();
+      initAuthFlowExamples();
+
+      // Add refresh buttons
+      addRefreshButton('#responses .card', initLiveApiExamples, '刷新API响应', 'refresh-resp', 'text-blue-500 dark:text-blue-400 focus:ring-blue-400');
+      addRefreshButton('#authentication .bg-gradient-to-br', initAuthFlowExamples, '刷新鉴权流程示例', 'refresh-auth', 'text-purple-500 dark:text-purple-400 focus:ring-purple-400');
+    });
+
+    const originalOpenTabForRefresh = window.openTab;
+    window.openTab = function (evt, tabName) {
+      if (originalOpenTabForRefresh) originalOpenTabForRefresh(evt, tabName);
+    };
+  </script>
+</body>
+
+</html>
