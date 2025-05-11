@@ -35,3 +35,6 @@ coverage
 *.sw?
 
 .vercel
+
+# Augment AI guidelines
+.augment-guidelines

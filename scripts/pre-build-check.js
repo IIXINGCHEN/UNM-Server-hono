@@ -22,7 +22,7 @@ const requiredFiles = [
   // 核心配置文件
   'package.json',
   'tsconfig.json',
-  '.env',
+  // '.env', // 在Vercel部署时使用环境变量而非.env文件
 
   // 核心源文件
   'src/index.ts',
@@ -164,38 +164,54 @@ try {
   process.exit(1);
 }
 
-// 检查.env文件中的必要环境变量
-console.log(chalk.cyan('检查.env文件中的必要环境变量...'));
-try {
-  const envPath = path.join(rootDir, '.env');
-  const envContent = fs.readFileSync(envPath, 'utf-8');
+// 检查必要的环境变量（从.env文件或系统环境变量）
+console.log(chalk.cyan('检查必要的环境变量...'));
 
-  // 检查必要的环境变量
-  const requiredEnvVars = [
-    'PORT',
-    'API_KEY',
-    'AUTH_SECRET',
-    'CLIENT_API_KEY'
-  ];
+// 检查必要的环境变量
+const requiredEnvVars = [
+  'PORT',
+  'API_KEY',
+  'AUTH_SECRET',
+  'CLIENT_API_KEY'
+];
 
-  const missingEnvVars = [];
+const missingEnvVars = [];
 
-  for (const envVar of requiredEnvVars) {
-    if (!envContent.includes(`${envVar} =`) && !envContent.includes(`${envVar}=`)) {
-      console.error(chalk.red(`警告: .env文件中缺少环境变量: ${envVar}`));
+// 首先检查系统环境变量
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    // 如果系统环境变量中没有，尝试从.env文件读取
+    try {
+      const envPath = path.join(rootDir, '.env');
+      if (fs.existsSync(envPath)) {
+        const envContent = fs.readFileSync(envPath, 'utf-8');
+        if (!envContent.includes(`${envVar} =`) && !envContent.includes(`${envVar}=`)) {
+          console.error(chalk.red(`警告: 缺少环境变量: ${envVar}`));
+          missingEnvVars.push(envVar);
+        }
+      } else {
+        // 如果.env文件不存在且系统环境变量中也没有
+        console.error(chalk.red(`警告: 缺少环境变量: ${envVar}`));
+        missingEnvVars.push(envVar);
+      }
+    } catch (error) {
+      console.error(chalk.red(`警告: 缺少环境变量: ${envVar}`));
       missingEnvVars.push(envVar);
     }
   }
+}
 
-  if (missingEnvVars.length > 0) {
-    console.warn(chalk.yellow('警告: .env文件中缺少一些环境变量，但构建将继续'));
+if (missingEnvVars.length > 0) {
+  // 在Vercel环境中，我们可能会在后续步骤中设置这些变量，所以只发出警告
+  if (process.env.VERCEL) {
+    console.warn(chalk.yellow('警告: 缺少一些环境变量，但在Vercel环境中构建将继续'));
     console.warn(chalk.yellow(`缺少的环境变量: ${missingEnvVars.join(', ')}`));
   } else {
-    console.log(chalk.green('环境变量检查通过'));
+    console.warn(chalk.yellow('警告: 缺少一些环境变量，但构建将继续'));
+    console.warn(chalk.yellow(`缺少的环境变量: ${missingEnvVars.join(', ')}`));
   }
-} catch (error) {
-  console.warn(chalk.yellow(`检查.env文件时出错: ${error.message}`));
-  console.warn(chalk.yellow('警告: 无法检查环境变量，但构建将继续'));
+} else {
+  console.log(chalk.green('环境变量检查通过'));
 }
 
 console.log(chalk.green('构建前检查通过，可以继续构建'));

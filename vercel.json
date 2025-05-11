@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "pnpm build",
+  "buildCommand": "pnpm vercel-build",
   "outputDirectory": "dist",
   "functions": {
     "api/*.js": {
@@ -39,6 +39,7 @@
   ],
   "env": {
     "NODE_ENV": "production",
+    "PORT": "3000",
     "ALLOWED_DOMAIN": "*.ixincghen.org.cn,*.axincghen.com,*.ixincghen.top,*.imixc.top,unm-server-hono.vercel.app,*.vercel.app,vercel.app,localhost,127.0.0.1",
     "RATE_LIMIT": "300",
     "ENABLE_HTTPS": "false",
