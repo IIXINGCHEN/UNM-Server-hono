@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UNM-Server-hono</title>
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 1rem;
+    }
+    p {
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+    .api-list {
+      text-align: left;
+      margin: 2rem 0;
+    }
+    .api-item {
+      padding: 0.75rem;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .api-item:last-child {
+      border-bottom: none;
+    }
+    .api-url {
+      color: #3498db;
+      text-decoration: none;
+      font-family: monospace;
+      padding: 0.25rem 0.5rem;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+    }
+    .api-url:hover {
+      background-color: #e9ecef;
+    }
+    .api-desc {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #7f8c8d;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+        margin: 1rem;
+      }
+      .api-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .api-url {
+        margin-bottom: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>UNM-Server-hono</h1>
+    <p>网易云解灰 API 服务，基于 Hono 框架构建</p>
+    
+    <div class="api-list">
+      <div class="api-item">
+        <a href="/api" class="api-url">/api</a>
+        <span class="api-desc">API 服务状态</span>
+      </div>
+      <div class="api-item">
+        <a href="/api/config" class="api-url">/api/config</a>
+        <span class="api-desc">获取服务配置信息</span>
+      </div>
+      <div class="api-item">
+        <a href="/api/health" class="api-url">/api/health</a>
+        <span class="api-desc">健康检查</span>
+      </div>
+      <div class="api-item">
+        <a href="/api/ncmget?id=1962165898&br=320" class="api-url">/api/ncmget?id=1962165898&br=320</a>
+        <span class="api-desc">获取音乐资源</span>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>版本: 2.2.6 | 部署于 Vercel</p>
+    </div>
+  </div>
+
+  <script>
+    // 获取服务状态
+    fetch('/api')
+      .then(response => response.json())
+      .then(data => {
+        console.log('API Status:', data);
+      })
+      .catch(error => {
+        console.error('Error fetching API status:', error);
+      });
+  </script>
+</body>
+</html>

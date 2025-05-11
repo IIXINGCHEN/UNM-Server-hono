@@ -1,0 +1,33 @@
+# 忽略 node_modules 目录
+node_modules
+
+# 忽略 .git 目录
+.git
+
+# 忽略开发环境文件
+.env.local
+.env.development
+.env.test
+
+# 忽略日志文件
+*.log
+logs
+
+# 忽略测试文件
+__tests__
+*.test.js
+*.spec.js
+
+# 忽略文档文件
+README.md
+LICENSE
+CHANGELOG.md
+
+# 忽略编辑器配置
+.vscode
+.idea
+*.sublime-*
+
+# 忽略其他不需要的文件
+.DS_Store
+Thumbs.db

@@ -39,7 +39,42 @@ pnpm build
 
 // 生产环境运行
 pnpm start
+
+// Vercel部署
+pnpm vercel:deploy
 ```
+
+## 部署
+
+### 本地部署
+
+按照上述运行步骤进行本地部署。
+
+### Vercel部署
+
+项目已配置好 Vercel 部署所需的文件，可以通过以下方式部署：
+
+1. 使用项目提供的部署脚本：
+
+```bash
+# 设置环境变量
+pnpm vercel:env
+
+# 执行部署
+pnpm vercel:deploy
+```
+
+2. 或者直接使用 Vercel CLI：
+
+```bash
+# 安装 Vercel CLI
+pnpm add -g vercel
+
+# 部署到 Vercel
+vercel --prod
+```
+
+详细的 Vercel 部署指南请参考 [docs/vercel-deployment-guide.md](docs/vercel-deployment-guide.md)。
 
 ## 反向代理
 
@@ -294,7 +329,7 @@ Content-Type: application/json; charset=utf-8
   "message": "操作成功",
   "requestId": "6cbef6b7-8381-4468-8c8d-6a7de2aaf01c",
   "data": {
-    // 具体数据
+   
   }
 }
 ```

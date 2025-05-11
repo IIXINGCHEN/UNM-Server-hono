@@ -1,41 +1,52 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist",
+  "functions": {
+    "api/*.js": {
+      "memory": 1024,
+      "maxDuration": 10
     }
-  ],
+  },
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/dist/index.js"
+      "dest": "/api/vercel.js"
     },
     {
       "src": "/health",
-      "dest": "/dist/index.js"
+      "dest": "/api/vercel.js"
     },
     {
       "src": "/metrics",
-      "dest": "/dist/index.js"
+      "dest": "/api/vercel.js"
     },
     {
-      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|ttf|woff|woff2|eot))",
-      "dest": "/public/$1"
+      "src": "/",
+      "dest": "/public/index.html"
+    },
+    {
+      "src": "/api-docs.html",
+      "dest": "/public/api-docs.html"
+    },
+    {
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "dest": "/dist/index.js",
-      "headers": {
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-        "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-API-Key, X-Request-ID, Content-Security-Policy-Report-Only"
-      }
+      "dest": "/api/vercel.js"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "ALLOWED_DOMAIN": "*.ixincghen.org.cn,*.axincghen.com,*.ixincghen.top,*.imixc.top,localhost,127.0.0.1",
+    "RATE_LIMIT": "300",
+    "ENABLE_HTTPS": "false",
+    "LOG_LEVEL": "info",
+    "ALLOW_CDN": "true",
+    "ENABLE_FLAC": "true",
+    "SELECT_MAX_BR": "true",
+    "FOLLOW_SOURCE_ORDER": "true",
+    "MUSIC_API_URL": "https://music-api.gdstudio.xyz/api.php"
+  }
 }

@@ -7,8 +7,9 @@
     "dev": "tsx watch src/index.ts",
     "prebuild": "node scripts/pre-build-check.js",
     "build": "tsc && node scripts/convert-favicon.js && node scripts/copy-config.js",
-    "postbuild": "node scripts/post-build-check.js",
+    "postbuild": "node scripts/post-build-check.js && node scripts/vercel-build-helper.cjs",
     "start": "node dist/index.js",
+    "vercel-build": "echo 'Skipping build step for Vercel deployment'",
     "test": "node scripts/api-test.js",
     "test:api": "node scripts/api-test.js",
     "monitor": "node scripts/monitor.js",
@@ -17,7 +18,10 @@
     "maintenance:all": "node scripts/maintenance.js --all",
     "maintenance:test": "node scripts/maintenance.js --test",
     "maintenance:deps": "node scripts/maintenance.js --deps",
-    "verify-build": "node scripts/post-build-check.js && node dist/index.js --verify-only"
+    "verify-build": "node scripts/post-build-check.js && node dist/index.js --verify-only",
+    "vercel:deploy": "bash scripts/vercel-deploy.sh",
+    "vercel:env": "node scripts/vercel-env-setup.js",
+    "vercel:prepare": "node scripts/vercel-deploy.js"
   },
   "author": "imsyy",
   "license": "MIT",

@@ -381,6 +381,10 @@ const startServer = async () => {
   }
 }
 
-startServer()
+// 导出应用实例，用于Vercel Serverless Functions
+export { app }
 
-
+// 仅在直接运行时启动服务器（非导入模式）
+if (import.meta.url === `file://${process.argv[1]}`) {
+  startServer()
+}
