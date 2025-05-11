@@ -24,6 +24,12 @@ export const domainCheck = async (c: Context, next: Next) => {
   // 使用配置文件中的域名列表，如果不存在则解析环境变量
   const domainList = domainsConfig.allowedDomains || allowedDomains.split(',').map((d: string) => d.trim());
 
+  // 确保Vercel域名也被允许
+  if (!domainList.includes('vercel.app') && !domainList.includes('*.vercel.app') && !domainList.includes('unm-server-hono.vercel.app')) {
+    domainList.push('unm-server-hono.vercel.app');
+    logger.info('已自动添加Vercel域名到允许列表', { domain: 'unm-server-hono.vercel.app' });
+  }
+
   // 获取请求的来源
   const origin = c.req.header('origin');
   const referer = c.req.header('referer');
@@ -40,7 +46,25 @@ export const domainCheck = async (c: Context, next: Next) => {
   if (origin) {
     try {
       const originUrl = new URL(origin);
-      if (domainList.includes(originUrl.hostname) || domainList.includes(origin)) {
+      const hostname = originUrl.hostname;
+
+      // 检查完全匹配
+      if (domainList.includes(hostname) || domainList.includes(origin)) {
+        await next();
+        return;
+      }
+
+      // 检查通配符匹配
+      for (const domain of domainList) {
+        if (domain.startsWith('*.') && hostname.endsWith(domain.substring(1))) {
+          await next();
+          return;
+        }
+      }
+
+      // 特殊处理Vercel域名
+      if (hostname.endsWith('.vercel.app') || hostname === 'vercel.app') {
+        logger.info('允许Vercel域名访问', { origin });
         await next();
         return;
       }
@@ -53,13 +77,38 @@ export const domainCheck = async (c: Context, next: Next) => {
   if (referer) {
     try {
       const refererUrl = new URL(referer);
-      if (domainList.includes(refererUrl.hostname) || domainList.includes(referer)) {
+      const hostname = refererUrl.hostname;
+
+      // 检查完全匹配
+      if (domainList.includes(hostname) || domainList.includes(referer)) {
+        await next();
+        return;
+      }
+
+      // 检查通配符匹配
+      for (const domain of domainList) {
+        if (domain.startsWith('*.') && hostname.endsWith(domain.substring(1))) {
+          await next();
+          return;
+        }
+      }
+
+      // 特殊处理Vercel域名
+      if (hostname.endsWith('.vercel.app') || hostname === 'vercel.app') {
+        logger.info('允许Vercel域名访问', { referer });
         await next();
         return;
       }
     } catch (error) {
       logger.warn(`无效的Referer头: ${referer}`);
     }
+  }
+
+  // 特殊处理Vercel环境
+  if (process.env.VERCEL === '1' || process.env.VERCEL === 'true') {
+    logger.info('在Vercel环境中运行，允许请求通过', { ip: getClientIp(c) });
+    await next();
+    return;
   }
 
   // 记录被拒绝的请求

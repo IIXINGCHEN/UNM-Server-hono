@@ -39,7 +39,7 @@
   ],
   "env": {
     "NODE_ENV": "production",
-    "ALLOWED_DOMAIN": "*.ixincghen.org.cn,*.axincghen.com,*.ixincghen.top,*.imixc.top,localhost,127.0.0.1",
+    "ALLOWED_DOMAIN": "*.ixincghen.org.cn,*.axincghen.com,*.ixincghen.top,*.imixc.top,unm-server-hono.vercel.app,*.vercel.app,vercel.app,localhost,127.0.0.1",
     "RATE_LIMIT": "300",
     "ENABLE_HTTPS": "false",
     "LOG_LEVEL": "info",
@@ -47,6 +47,7 @@
     "ENABLE_FLAC": "true",
     "SELECT_MAX_BR": "true",
     "FOLLOW_SOURCE_ORDER": "true",
-    "MUSIC_API_URL": "https://music-api.gdstudio.xyz/api.php"
+    "MUSIC_API_URL": "https://music-api.gdstudio.xyz/api.php",
+    "VERCEL": "true"
   }
 }

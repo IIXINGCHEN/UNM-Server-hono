@@ -235,16 +235,21 @@ export const apiKeyMiddleware = async (c: Context, next: Next) => {
   // 验证API密钥权限
   const { valid, reason } = validateApiKeyPermission(providedKey, requiredLevel);
 
-  // 开发环境中的特殊处理
-  if (!valid && process.env.NODE_ENV !== 'production') {
-    // 检查是否来自localhost
-    const isLocalhost = c.req.header('host')?.includes('localhost') || c.req.header('host')?.includes('127.0.0.1');
-    if (isLocalhost) {
-      logger.warn(`开发环境下，允许来自localhost的请求跳过API密钥验证`, {
+  // 开发环境或Vercel环境中的特殊处理
+  if (!valid && (process.env.NODE_ENV !== 'production' || process.env.VERCEL === '1' || process.env.VERCEL === 'true')) {
+    // 检查是否来自localhost或Vercel域名
+    const host = c.req.header('host') || '';
+    const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
+    const isVercel = host.includes('vercel.app');
+
+    if (isLocalhost || isVercel || process.env.VERCEL === '1' || process.env.VERCEL === 'true') {
+      logger.warn(`特殊环境下，允许请求跳过API密钥验证`, {
         requestId,
         path,
         method: c.req.method,
-        requiredLevel
+        requiredLevel,
+        host,
+        isVercel: process.env.VERCEL === '1' || process.env.VERCEL === 'true'
       });
       await next();
       return;

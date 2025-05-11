@@ -134,8 +134,13 @@ export const validateOrigin = (c: Context): { valid: boolean; reason?: string } 
     return { valid: true };
   }
 
-  // 非生产环境可以放宽限制
-  if (process.env.NODE_ENV !== 'production') {
+  // 非生产环境或Vercel环境可以放宽限制
+  if (process.env.NODE_ENV !== 'production' || process.env.VERCEL === '1' || process.env.VERCEL === 'true') {
+    return { valid: true };
+  }
+
+  // 如果是Vercel域名，也允许访问
+  if (host.includes('vercel.app')) {
     return { valid: true };
   }
 

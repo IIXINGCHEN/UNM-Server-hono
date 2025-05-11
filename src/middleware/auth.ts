@@ -110,10 +110,28 @@ export const authMiddleware = async (c: Context, next: Next) => {
   // 验证鉴权参数
   const { valid, reason } = verifyAuthParam(authParam, path, queryParams, authSecret);
   if (!valid) {
-    // 如果请求来自localhost，则允许跳过鉴权
-    const isLocalhost = c.req.header('host')?.includes('localhost') || c.req.header('host')?.includes('127.0.0.1');
-    if (isLocalhost) {
-      logger.warn(`允许来自localhost的请求跳过鉴权验证`, {
+    // 如果请求来自localhost或Vercel环境，则允许跳过鉴权
+    const host = c.req.header('host') || '';
+    const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
+    const isVercel = host.includes('vercel.app');
+    const isVercelEnv = process.env.VERCEL === '1' || process.env.VERCEL === 'true';
+
+    if (isLocalhost || isVercel || isVercelEnv) {
+      logger.warn(`允许特殊环境请求跳过鉴权验证`, {
+        requestId,
+        path,
+        type,
+        reason,
+        host,
+        isVercelEnv
+      });
+      await next();
+      return;
+    }
+
+    // 开发环境中放宽鉴权要求
+    if (process.env.NODE_ENV !== 'production') {
+      logger.warn(`开发环境中放宽鉴权要求`, {
         requestId,
         path,
         type,

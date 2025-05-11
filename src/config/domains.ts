@@ -1,6 +1,6 @@
 /**
  * UNM-Server-hono 域名配置文件
- * 
+ *
  * 此文件用于集中管理所有允许访问的域名
  * 在生产环境中应设置为具体域名，避免使用通配符
  */
@@ -12,8 +12,12 @@ export const allowedDomains = [
   '*.axincghen.com',
   '*.ixincghen.top',
   '*.imixc.top',
+
+  // Vercel域名
   'unm-server-hono.vercel.app',
-  
+  '*.vercel.app',
+  'vercel.app',
+
   // 本地开发域名
   'localhost',
   '127.0.0.1'
