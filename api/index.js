@@ -1,5 +1,4 @@
 // Vercel Serverless Function 入口文件
-// 此文件用于在 Vercel 环境中作为 API 入口点
 
 // 导入主应用
 import { app } from '../dist/index.js';
