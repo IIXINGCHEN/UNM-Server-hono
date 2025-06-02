@@ -278,7 +278,7 @@ async function initRealApiExamples() {
     }
 
     // 获取match响应示例
-    const authMatchResponse = await fetch(`/api/auth?path=/match?type=url&id=416892104`, {
+    const authMatchResponse = await fetch(`/api/auth?path=/match?type=url&id=158616`, {
       headers: {
         'X-API-Key': apiKey
       }
@@ -293,7 +293,7 @@ async function initRealApiExamples() {
     const authMatchParam = authMatchData.auth || (authMatchData.data?.auth);
 
     if (authMatchParam) {
-      const matchResponse = await fetch(`/api/match?type=url&id=416892104&auth=${encodeURIComponent(authMatchParam)}`, {
+      const matchResponse = await fetch(`/api/match?type=url&id=158616&auth=${encodeURIComponent(authMatchParam)}`, {
         headers: {
           'X-API-Key': apiKey
         }
@@ -306,7 +306,7 @@ async function initRealApiExamples() {
     }
 
     // 获取search响应示例
-    const authSearchResponse = await fetch(`/api/auth?path=/search?name=${encodeURIComponent("起风了")}`, {
+    const authSearchResponse = await fetch(`/api/auth?path=/search?name=${encodeURIComponent("太傻")}`, {
       headers: {
         'X-API-Key': apiKey
       }
@@ -321,7 +321,7 @@ async function initRealApiExamples() {
     const authSearchParam = authSearchData.auth || (authSearchData.data?.auth);
 
     if (authSearchParam) {
-      const searchResponse = await fetch(`/api/search?name=${encodeURIComponent("起风了")}&source=kuwo&auth=${encodeURIComponent(authSearchParam)}`, {
+      const searchResponse = await fetch(`/api/search?name=${encodeURIComponent("太傻")}&source=kuwo&auth=${encodeURIComponent(authSearchParam)}`, {
         headers: {
           'X-API-Key': apiKey
         }
@@ -398,7 +398,7 @@ async function generateMockResponse(endpoint, _method, params) {
 
     if (endpoint.includes('/match')) {
       // 获取鉴权参数
-      const id = params.id || "416892104";
+      const id = params.id || "158616";
       const type = params.type || "url";
       const authPath = `/match?type=${type}&id=${id}`;
 
@@ -425,7 +425,7 @@ async function generateMockResponse(endpoint, _method, params) {
 
     } else if (endpoint.includes('/search')) {
       // 获取鉴权参数
-      const name = params.name || "起风了";
+      const name = params.name || "太傻";
       const source = params.source || "kuwo";
       const authPath = `/search?name=${encodeURIComponent(name)}`;
 
