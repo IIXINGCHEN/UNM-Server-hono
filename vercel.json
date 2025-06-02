@@ -42,7 +42,7 @@
     "PORT": "3000",
     "ALLOWED_DOMAIN": "*.ixincghen.org.cn,*.axincghen.com,*.ixincghen.top,*.imixc.top,unm-server-hono.vercel.app,*.vercel.app,vercel.app,localhost,127.0.0.1",
     "RATE_LIMIT": "300",
-    "ENABLE_HTTPS": "false",
+    "ENABLE_HTTPS": "true",
     "LOG_LEVEL": "info",
     "ALLOW_CDN": "true",
     "ENABLE_FLAC": "true",
